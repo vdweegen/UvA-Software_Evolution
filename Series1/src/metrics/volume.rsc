@@ -1,8 +1,12 @@
 module metrics::volume
 
+import IO;
+import String;
+
 // Extract the actual source code from all the lines
 public list[str] LinesOfCode(set[loc] files) {
-	// Map all the locs to our list
+	locpf = LinesOfCodePerFile(files);
+	return [*locpf[f] | f <- locpf];
 }
 
 // Filter the actual code-lines from comments and blank lines
@@ -18,7 +22,13 @@ public map[loc, list[str]] LinesOfCodePerFile(set[loc] files) {
 public list[str] RemoveComments(loc file) {
 	list[str] lines = [];
 	
-	// Do some magic here
+	for (line <- readFileLines(file)) {	
+		_line = line;
+		
+		// Execute different strip types
+		
+		lines += _line;
+	}
 	
 	return lines;
 }
