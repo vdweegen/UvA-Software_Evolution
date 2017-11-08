@@ -41,9 +41,6 @@ public list[str] StripLine(loc file) {
 /*
  * Detects commented lines
  * 	V2: Now uses regex
- *
- * TODO:
- *	Detect MULTI-LINE
  */
 public bool IsCommentedLine(str line) {
 	return /^\s*\/\/.*$/ := line;
