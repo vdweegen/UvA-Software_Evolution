@@ -22,13 +22,23 @@ public map[loc, list[str]] LinesOfCodePerFile(set[loc] files) {
 public list[str] StripLine(loc file) {
 	list[str] lines = [];
 	
-	for (line <- readFileLines(file)) {	
-		_line = line;
+	// Do the 'simple' stuff
+	for (line <- readFileLines(file)) {
+		// Strip Single-Line Comment
+		line = StripSingleLineComment(line);
 		
-		// Execute different strip types
+		// Strip Blank Lines
 		
-		lines += _line;
+		lines += line;
 	}
 	
+	// Strip Multi-Line Comments
+	
+	// Should be done here
 	return lines;
+}
+
+// Strip all single-line comments
+public str StripSingleLineComment(line) {
+	return line;
 }
