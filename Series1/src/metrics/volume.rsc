@@ -25,9 +25,9 @@ public list[str] StripLine(loc file) {
 	// Do the 'simple' stuff
 	for (line <- readFileLines(file)) {
 		// Skip commented out lines
-		if (IsCommentedLine(line)) {
+		if (IsCommentedLine(line) || IsBlankLine(line)) {
 			continue;
-		}		
+		}
 		lines += line;
 	}
 	
@@ -47,4 +47,14 @@ public bool IsCommentedLine(str line) {
 	line = replaceAll(line,"\t", "");
 	line = replaceAll(line,"\n", "");
 	return startsWith("//", line);
+}
+
+/*
+ * Detect blank lines
+ * 	
+ * Finally figured out how the regex thing works =D
+ * Should backport to IsCommentedLine();
+ */
+public bool IsBlankLine(str line) {
+	return /^\s*$/ := line;
 }
