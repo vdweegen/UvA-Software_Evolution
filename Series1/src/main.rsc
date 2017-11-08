@@ -22,5 +22,6 @@ public loc smallProject = |project://smallsql0.21_src|;
 public void run() {
 	m = createM3FromEclipseProject(smallProject);
 	f = files(m);
+	println("Lines: <size(Lines(f))>");
 	println("LinesOfCode: <size(LinesOfCode(f))>");
 }

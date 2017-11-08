@@ -3,6 +3,11 @@ module metrics::volume
 import IO;
 import String;
 
+public list[str] Lines(set[loc] files) {
+	lpf = LinesPerFile(files);
+	return [*lpf[f] | f <- lpf];
+}
+
 // Extract the actual source code from all the lines
 public list[str] LinesOfCode(set[loc] files) {
 	locpf = LinesOfCodePerFile(files);
@@ -14,6 +19,15 @@ public map[loc, list[str]] LinesOfCodePerFile(set[loc] files) {
 	map[loc, list[str]] fileMap = ();
 	for (file <- files) {
 		fileMap[file] = ProcessFileLine(file);
+	}
+	return fileMap;
+}
+
+// Return all the lines
+public map[loc, list[str]] LinesPerFile(set[loc] files) {
+	map[loc, list[str]] fileMap = ();
+	for (file <- files) {
+		fileMap[file] = readFileLines(file);
 	}
 	return fileMap;
 }
