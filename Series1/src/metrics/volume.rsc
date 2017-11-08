@@ -13,7 +13,7 @@ public list[str] LinesOfCode(set[loc] files) {
 public map[loc, list[str]] LinesOfCodePerFile(set[loc] files) {
 	map[loc, list[str]] fileMap = ();
 	for (file <- files) {
-		fileMap[file] = StripLine(file); // TODO Strip comments
+		fileMap[file] = StripLine(file);
 	}
 	return fileMap;
 }
@@ -24,21 +24,27 @@ public list[str] StripLine(loc file) {
 	
 	// Do the 'simple' stuff
 	for (line <- readFileLines(file)) {
-		// Strip Single-Line Comment
-		line = StripSingleLineComment(line);
-		
-		// Strip Blank Lines
-		
+		// Skip commented out lines
+		if (IsCommentedLine(line)) {
+			continue;
+		}		
 		lines += line;
 	}
-	
-	// Strip Multi-Line Comments
 	
 	// Should be done here
 	return lines;
 }
 
-// Strip all single-line comments
-public str StripSingleLineComment(line) {
-	return line;
+/*
+ * Super simple code that detects a commented line
+ * TODO:
+ *	Detect MULTI-LINE
+ *
+ *  Nice to have: use regexes
+ */
+public bool IsCommentedLine(str line) {
+	line = replaceAll(line," ", "");
+	line = replaceAll(line,"\t", "");
+	line = replaceAll(line,"\n", "");
+	return startsWith("//", line);
 }
