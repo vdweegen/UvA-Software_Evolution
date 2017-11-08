@@ -16,3 +16,9 @@ import aspects::stability;
 import aspects::testability;
 
 public loc smallProject = |project://smallsql0.21_src|;
+
+public void run() {
+	m = createM3FromEclipseProject(smallProject);
+	f = files(m);
+	println(LinesOfCode(f));
+}
