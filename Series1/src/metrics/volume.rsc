@@ -13,29 +13,9 @@ public list[str] LinesOfCode(set[loc] files) {
 public map[loc, list[str]] LinesOfCodePerFile(set[loc] files) {
 	map[loc, list[str]] fileMap = ();
 	for (file <- files) {
-		fileMap[file] = StripLine(file);
+		fileMap[file] = ProcessFileLine(file);
 	}
 	return fileMap;
-}
-
-// Strip all the comments
-public list[str] StripLine(loc file) {
-	list[str] lines = [];
-	
-	// Do the 'simple' stuff
-	for (line <- readFileLines(file)) {
-		// Skip commented out lines
-		if (IsCommentedLine(line) || IsBlankLine(line)) {
-			continue;
-		}
-		lines += line;
-	}
-	
-	// Check for Multi-Line comment blocks
-	lines = StripMultiLineComments(lines);
-	
-	// Should be done here
-	return lines;
 }
 
 /*
@@ -61,7 +41,63 @@ public bool IsBlankLine(str line) {
  *	We need to feed the whole 'thing' to effectively
  *  check for blocks (cannot do on a per-line basis)
  */
-public list[str] StripMultiLineComments(lines) {
-	// TODO
-	return lines;
+public list[str] ProcessFileLine(loc file) {
+	list[str] clean = [];
+		
+	bool processing = false;
+	int startPost, endPos;
+	
+	for (line <- readFileLines(file)) {
+				
+		startPos = findFirst(line, "/*");
+		endPos = findFirst(line, "*/");
+		
+		if ((startPos >= 0) && (endPos >= 0)) {
+			/*
+			 * Both found, special comment on single line
+			 */
+			continue;
+		} else if ((startPos >= 0) && (endPos < 0)) {
+			/*
+			 * Offset not found, dealing with the start of
+			 * a multi-line special comment
+			 */
+			if (!processing) {
+				processing = true;
+				continue;	
+			}
+			
+		} else if ((startPos < 0) && (endPos >= 0)) {
+			/*
+			 * Start not found, dealing with the end of
+			 * a multi-line special comment 
+			 */
+			if (processing) {
+				processing = false;
+				continue;
+			}
+		} else { 
+			/* => startPos < 0 && endPos < 0
+			 * 
+			 * Both not found, dealing with a 'normal' line
+			 *  or
+			 * A line in between a multi-line comment
+			 */
+			if (processing) { // In between a multi-line comment
+				// zero or more whitespaces, followed by a *, anything else
+				if (/^\s*[*].*$/ := line) {
+					continue;
+				}
+			} else { // 'normal' line
+				// Moved single-line checker here
+				if (IsCommentedLine(line) || IsBlankLine(line)) {
+					continue;
+				}
+			}
+		}
+		// When we didn't prematurely exit
+		clean += line;
+	}
+	
+	return clean;
 }
