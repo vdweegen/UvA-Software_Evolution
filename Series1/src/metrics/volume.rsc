@@ -31,6 +31,9 @@ public list[str] StripLine(loc file) {
 		lines += line;
 	}
 	
+	// Check for Multi-Line comment blocks
+	lines = StripMultiLineComments(lines);
+	
 	// Should be done here
 	return lines;
 }
@@ -54,4 +57,14 @@ public bool IsCommentedLine(str line) {
  */
 public bool IsBlankLine(str line) {
 	return /^\s*$/ := line;
+}
+
+/*
+ * Strip Multi-Line comments blocks
+ *	We need to feed the whole 'thing' to effectively
+ *  check for blocks (cannot do on a per-line basis)
+ */
+public list[str] StripMultiLineComments(lines) {
+	// TODO
+	return lines;
 }
