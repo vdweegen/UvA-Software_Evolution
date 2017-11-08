@@ -36,17 +36,14 @@ public list[str] StripLine(loc file) {
 }
 
 /*
- * Super simple code that detects a commented line
+ * Detects commented lines
+ * 	V2: Now uses regex
+ *
  * TODO:
  *	Detect MULTI-LINE
- *
- *  Nice to have: use regexes
  */
 public bool IsCommentedLine(str line) {
-	line = replaceAll(line," ", "");
-	line = replaceAll(line,"\t", "");
-	line = replaceAll(line,"\n", "");
-	return startsWith("//", line);
+	return /^\s*\/\/.*$/ := line;
 }
 
 /*
