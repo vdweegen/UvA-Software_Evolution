@@ -14,3 +14,6 @@ import aspects::analysability;
 import aspects::changeability;
 import aspects::stability;
 import aspects::testability;
+
+public loc smallProject = |project://data/smallsql0.21_src|;
+public loc largeProject = |project://data/hsqldb-2.3.1|;
