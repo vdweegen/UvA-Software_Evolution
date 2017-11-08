@@ -4,6 +4,8 @@ import IO;
 import lang::java::jdt::m3::AST;
 import lang::java::jdt::m3::Core;
 
+import List;
+
 import metrics::duplication;
 import metrics::unitcomplexity;
 import metrics::unitsize;
@@ -20,5 +22,5 @@ public loc smallProject = |project://smallsql0.21_src|;
 public void run() {
 	m = createM3FromEclipseProject(smallProject);
 	f = files(m);
-	println(LinesOfCode(f));
+	println("LinesOfCode: <size(LinesOfCode(f))>");
 }
