@@ -27,7 +27,14 @@ public map[loc, list[str]] LinesOfCodePerFile(set[loc] files) {
 public map[loc, list[str]] LinesOfPrintPerFile(set[loc] files) {
 	map[loc, list[str]] fileMap = ();
 	for (file <- files) {
-		fileMap[file] = readFileLines(file);
+		list[str] lines = [];
+		for (line <- readFileLines(file)) {
+			if (IsBlankLine(line)) {
+				continue;
+			}
+			lines += line;
+		}
+		fileMap[file] = lines;
 	}
 	return fileMap;
 }
