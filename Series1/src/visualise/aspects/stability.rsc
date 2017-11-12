@@ -15,6 +15,7 @@ public str VisualiseStability(int unittestingClass) {
 	return ReportSigClass(ClassifyStability(unittestingClass));
 }
 
+// TODO: Fix rounding
 public int ClassifyStability(int unittestingClass) {
 	return unittestingClass;
 }

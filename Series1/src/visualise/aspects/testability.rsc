@@ -13,6 +13,7 @@ public str VisualiseTestability(int unitcomplexityClass, int unitsizeClass, int 
 	return ReportSigClass(ClassifyTestability(unitcomplexityClass, unitsizeClass, unittestingClas));
 }
 
+// TODO: Fix rounding
 public int ClassifyTestability(int unitcomplexityClass, int unitsizeClass, int unittestingClass) {
 	return (unitcomplexityClass + unitsizeClass + unittestingClass) / 3;
 }
