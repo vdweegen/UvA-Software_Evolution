@@ -3,8 +3,8 @@ module metrics::volume
 import IO;
 import String;
 
-public list[str] Lines(set[loc] files) {
-	lpf = LinesPerFile(files);
+public list[str] LinesOfPrint(set[loc] files) {
+	lpf = LinesOfPrintPerFile(files);
 	return [*lpf[f] | f <- lpf];
 }
 
@@ -24,7 +24,7 @@ public map[loc, list[str]] LinesOfCodePerFile(set[loc] files) {
 }
 
 // Return all the lines
-public map[loc, list[str]] LinesPerFile(set[loc] files) {
+public map[loc, list[str]] LinesOfPrintPerFile(set[loc] files) {
 	map[loc, list[str]] fileMap = ();
 	for (file <- files) {
 		fileMap[file] = readFileLines(file);
