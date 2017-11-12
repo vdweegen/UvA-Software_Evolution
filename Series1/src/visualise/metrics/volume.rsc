@@ -1,5 +1,7 @@
 module visualise::metrics::volume
 
+import visualise::sigreport;
+
 /* 
  * Visualise the volume (SIG Grading Scheme)
  * 	for the scope of the current project we assume the project
@@ -10,7 +12,7 @@ public str VisualiseVolume(int lines) {
 	return ReportSigClass(ClassifyLinesOfCode(lines));
 }
 
-private int ClassifyLinesOfCode(int lines) {
+public int ClassifyLinesOfCode(int lines) {
 	int class;
 	if (lines < 66000) {
 		class = 2;
@@ -27,25 +29,4 @@ private int ClassifyLinesOfCode(int lines) {
 		class = -2;
 	}
 	return class;
-}
-
-// Should move this to a higher level later on
-private str ReportSigClass(int class) {
-	if (class == 2) {
-		return "++";
-	} else
-	if (class == 1) {
-		return " +";
-	} else
-	if (class == 0) {
-		return " o";
-	} else
-	if (class == -1) {
-		return " -";
-	} else
-	if (class == -2) {
-		return "--";
-	} else {
-		return "unsupported";
-	}
 }

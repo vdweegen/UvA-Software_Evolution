@@ -8,3 +8,11 @@ module visualise::aspects::testability
  * 	for the scope of the current project we assume the project
  *  to be JAVA, but leave room for future extension.
  */
+ 
+public str VisualiseTestability(int unitcomplexityClass, int unitsizeClass, int unittestingClass) {
+	return ReportSigClass(ClassifyTestability(unitcomplexityClass, unitsizeClass, unittestingClas));
+}
+
+public int ClassifyTestability(int unitcomplexityClass, int unitsizeClass, int unittestingClass) {
+	return (unitcomplexityClass + unitsizeClass + unittestingClass) / 3;
+}
