@@ -1,4 +1,4 @@
-module visualise::duplication
+module visualise::metrics::duplication
 
 /* 
  * Visualise the duplication (SIG Grading Scheme)

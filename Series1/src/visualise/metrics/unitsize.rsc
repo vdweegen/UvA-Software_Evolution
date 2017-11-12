@@ -1,4 +1,4 @@
-module visualise::unitsize
+module visualise::metrics::unitsize
 
 /* 
  * Visualise the unitsize (SIG Grading Scheme)

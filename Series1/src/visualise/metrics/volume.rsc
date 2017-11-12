@@ -1,4 +1,4 @@
-module visualise::volume
+module visualise::metrics::volume
 
 /* 
  * Visualise the volume (SIG Grading Scheme)

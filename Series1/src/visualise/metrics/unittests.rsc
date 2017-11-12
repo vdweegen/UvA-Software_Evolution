@@ -1,4 +1,4 @@
-module visualise::unittests
+module visualise::metrics::unittests
 
 /* 
  * Visualise the unittests (SIG Grading Scheme)

@@ -1,4 +1,4 @@
-module visualise::unitcomplexity
+module visualise::metrics::unitcomplexity
 
 /* 
  * Visualise the unitcomplexity (SIG Grading Scheme)
