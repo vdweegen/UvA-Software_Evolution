@@ -32,10 +32,15 @@ import visualise::aspects::testability;
 public loc smallProject = |project://smallsql0.21_src|;
 
 public void run() {
-	m = createM3FromEclipseProject(smallProject);
-	f = files(m);
+	p = createM3FromEclipseProject(smallProject);
+	f = files(p);
 	println("LinesOfPrint: <size(LinesOfPrint(f))>");
-	println("LinesOfCode: <size(LinesOfCode(f))>");
+	locc = size(LinesOfCode(f));
+	println("LinesOfCode: <locc>");
+	println("LinesOfCode Rank: <VisualiseVolume(locc)>");
 	
-	println("LinesOfCode Rank: <VisualiseVolume(size(LinesOfCode(f)))>");
+	m = methods(p);
+	locm = LinesOfCodePerMethod(m);
+	//println("LinesOfCodePerMethod: <locm>");
+	println("LinesOfCodePerMethod Rank: <VisualiseUnitsize(locm)>");
 }
