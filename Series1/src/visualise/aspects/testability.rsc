@@ -12,7 +12,7 @@ import visualise::sigreport;
  */
  
 public str VisualiseTestability(int unitcomplexityClass, int unitsizeClass, int unittestingClass) {
-	return ReportSigClass(ClassifyTestability(unitcomplexityClass, unitsizeClass, unittestingClas));
+	return ReportSigClass(ClassifyTestability(unitcomplexityClass, unitsizeClass, unittestingClass));
 }
 
 // TODO: Fix rounding
