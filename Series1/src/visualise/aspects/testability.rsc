@@ -1,5 +1,7 @@
 module visualise::aspects::testability
 
+import visualise::sigreport;
+
 /* 
  * Visualise the analysability (SIG Grading Scheme)
  * 	uses the following source code properties:
