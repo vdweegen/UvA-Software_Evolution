@@ -41,10 +41,16 @@ public map[loc, list[str]] LinesOfPrintPerFile(set[loc] files) {
 
 /*
  * Detects commented lines
- * 	V2: Now uses regex
+ * 	V3: Add different comment variants
+ *  '\/\/' 	=> \\
+ *  '--' 	=> -- 
+ *  '<!--'  => <!--
+ *  '%'		=> %
+ *  '#' 	=> #
+ *
  */
-public bool IsCommentedLine(str line) {
-	return /^\s*\/\/.*$/ := line;
+public bool IsCommentedLine(str line) {	
+	return /^(\s*)((\/\/)|(--)|(\<\!--)|(%)|(#))(.*$)/ := line;
 }
 
 /*
