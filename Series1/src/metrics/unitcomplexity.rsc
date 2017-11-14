@@ -1,5 +1,5 @@
 module metrics::unitcomplexity
-import lang::java::m3::Core;
+//import lang::java::m3::Core;
 import lang::java::jdt::m3::AST;
 import lang::java::jdt::m3::Core;
 import IO;
