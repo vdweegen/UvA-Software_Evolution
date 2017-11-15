@@ -33,11 +33,15 @@ public loc smallProject = |project://smallsql0.21_src|;
 
 public void run() {
 	p = createM3FromEclipseProject(smallProject);
+	ast = createAstsFromEclipseProject(smallProject, false);
+	
 	f = files(p);
 	println("LinesOfPrint: <size(LinesOfPrint(f))>");
 	locc = size(LinesOfCode(f));
 	println("LinesOfCode: <locc>");
 	println("LinesOfCode Rank: <VisualiseVolume(locc)>");
+	
+	println("calculateComplexity: <calculateComplexity(ast)>");
 	
 	m = methods(p);
 	locm = LinesOfCodePerMethod(m);
