@@ -13,7 +13,7 @@ import util::Math;
  *  to be JAVA, but leave room for future extension.
  */
  
-public str VisualiseAnalysability(int volumeClass, int duplicationClas, int unitsizeClass, int unittestingClass) {
+public str VisualiseAnalysability(int volumeClass, int duplicationClass, int unitsizeClass, int unittestingClass) {
 	return ReportSigClass(ClassifyAnalysability(volumeClass, duplicationClass, unitsizeClass, unittestingClass));
 }
 
