@@ -3,26 +3,52 @@ import lang::java::m3::Core;
 import lang::java::m3::AST;
 import lang::java::jdt::m3::AST;
 import lang::java::jdt::m3::Core;
+
+import metrics::volume;
+
 import IO;
 import Set;
 import List;
 
+//anno rel[loc from, loc to] M3@extends;
+//anno rel[loc from, loc to] M3@implements;
+//anno rel[loc from, loc to] M3@methodInvocation;
+//anno rel[loc from, loc to] M3@fieldAccess;
+//anno rel[loc from, loc to] M3@typeDependency;
+//anno rel[loc from, loc to] M3@methodOverrides;
+//anno rel[loc declaration, loc annotation] M3@annotations;
 
-public loc locationExample = |project://smallsql0.21_src/src/smallsql/database/MemoryStream.java|;
-public loc locationExampleProject = |project://smallsql0.21_src|;
-public M3 m1 = createM3FromEclipseFile(locationExample);
-public M3 m = createM3FromEclipseProject(locationExampleProject);
-public set[loc] theMethodsSet = methods(m);
-public list[loc] theMethods = toList(theMethodsSet);
-public loc theMethod = |java+method:///smallsql/database/MemoryStream/verifyFreePufferSize(int)|;
-public Declaration methodAst = getMethodASTEclipse(theMethod, model=m);
+
+//public loc locationExample = |project://smallsql0.21_src/src/smallsql/database/MemoryStream.java|;
+//public loc locationExampleProject = |project://smallsql0.21_src|;
+//public M3 m1 = createM3FromEclipseFile(locationExample);
+//public M3 m = createM3FromEclipseProject(locationExampleProject);
+//public set[loc] theMethodsSet = methods(m);
+//public list[loc] theMethods = toList(theMethodsSet);
+//public loc theMethod = |java+method:///smallsql/database/MemoryStream/verifyFreePufferSize(int)|;
+//public Declaration methodAst = getMethodASTEclipse(theMethod, model=m);
 
 
 // Get method AST
 // Count number of control flow
 
+public lrel[int comp, int sloc] calculateComplexity(loc proj){
+	set[Declaration] ast = createAstsFromEclipseProject(proj, false);
+	
+	res = [];
 
-public int calculateComplexity (Declaration method) {
+	visit (ast) {
+	case Declaration dec : method(_, _, _, _, Statement impl):
+	println(impl);
+		//returnList += <Complexity(dec), size(ProcessFileLine({dec@src}))>;
+	//case Declaration dec : constructor(_, _, _, Statement impl): 
+		//returnList += <Complexity(dec), size(ProcessFileLine({impl@src}))>;
+	}
+
+	return res;
+}
+
+public int Complexity(Declaration method){
 	int c = 1;
 	
 	visit(method) {
