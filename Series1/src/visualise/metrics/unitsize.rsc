@@ -41,9 +41,9 @@ public int ClassifyLinesOfCodePerMethod(map[loc, int] lines) {
 	int class = 2;
 	
 	//println("No risk: <c[0] / total * 100>%");
-	//println("Low risk: <c[0] / total * 100>%");
-	//println("Medium risk: <c[0] / total * 100>%");
-	//println("High risk: <c[0] / total * 100>%");
+	//println("Low risk: <c[1] / total * 100>%");
+	//println("Medium risk: <c[2] / total * 100>%");
+	//println("High risk: <c[3] / total * 100>%");
 	
 	if (c[3] > 0) {
 		class -= 1;

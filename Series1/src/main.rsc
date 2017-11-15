@@ -41,7 +41,7 @@ public void run() {
 	println("LinesOfCode: <locc>");
 	println("LinesOfCode Rank: <VisualiseVolume(locc)>");
 	
-	println("calculateComplexity: <calculateComplexity(ast)>");
+	println("Complexity Rank: <VisualiseComplexity(calculateComplexity(ast))>");
 	
 	m = methods(p);
 	locm = LinesOfCodePerMethod(m);
