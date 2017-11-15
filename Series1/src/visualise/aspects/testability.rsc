@@ -2,6 +2,8 @@ module visualise::aspects::testability
 
 import visualise::sigreport;
 
+import util::Math;
+
 /* 
  * Visualise the analysability (SIG Grading Scheme)
  * 	uses the following source code properties:
@@ -15,7 +17,6 @@ public str VisualiseTestability(int unitcomplexityClass, int unitsizeClass, int 
 	return ReportSigClass(ClassifyTestability(unitcomplexityClass, unitsizeClass, unittestingClass));
 }
 
-// TODO: Fix rounding
 public int ClassifyTestability(int unitcomplexityClass, int unitsizeClass, int unittestingClass) {
-	return (unitcomplexityClass + unitsizeClass + unittestingClass) / 3;
+	return round(unitcomplexityClass + unitsizeClass + unittestingClass) / 3;
 }

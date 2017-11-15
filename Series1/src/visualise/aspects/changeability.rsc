@@ -2,6 +2,8 @@ module visualise::aspects::changeability
 
 import visualise::sigreport;
 
+import util::Math;
+
 /* 
  * Visualise the changeability (SIG Grading Scheme)
  * 	uses the following source code properties:
@@ -15,7 +17,6 @@ public str VisualiseChangeability(int unitcomplexityClass, int duplicationClass)
 	return ReportSigClass(ClassifyChangeability(unitcomplexityClass, duplicationClass));
 }
 
-// TODO: Fix rounding
 public int ClassifyChangeability(int unitcomplexityClass, int duplicationClass) {
-	return (unitcomplexityClass + duplicationClass) / 2;
+	return round(unitcomplexityClass + duplicationClass) / 2;
 }
