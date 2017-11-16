@@ -30,7 +30,7 @@ public str source = readFile(file);
 
 public list[int] unitSize(M3 model) {
 	set[loc] projectMethods = methods(model);
-	return ([linesExtract(readFile(m)) | m <- projectMethods]);
+	return ([unitSize(readFile(m)) | m <- projectMethods]);
 }
 
 public int unitSize(str source) {
