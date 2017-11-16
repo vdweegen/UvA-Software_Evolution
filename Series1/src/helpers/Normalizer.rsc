@@ -37,7 +37,7 @@ public str removeComments(str source) {
 	list[str] coms = comments(source);
 	str normalized = source;
 	
-	for(com <- coms) {
+	for(com <- dup(coms)) {
 		normalized = replaceAll(normalized, com, "");
 	}
 	return normalized;
