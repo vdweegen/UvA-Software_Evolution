@@ -14,13 +14,6 @@ import lang::java::jdt::m3::Core;
 	
 */
 
-public loc file = |project://smallsql0.21_src/src/smallsql/junit/TestOrderBy.java|;
-public loc proj = |project://smallsql0.21_src|;
-public M3 model = createM3FromEclipseProject(proj);
-public set[loc] sources = files(model);
-public str source = readFile(file);
-
-
 public map[str, int] volume(set[loc] project) {
 	list[map[str, int]] volumes = [volume(s) |  s  <- project];
 	
@@ -44,6 +37,7 @@ public map[str, int] volume(set[loc] project) {
 	
 	return initialMap;
 }
+
 public map[str, int] volume(loc file) {
 	str rawSource = readFile(file);
 	return volume(rawSource);
