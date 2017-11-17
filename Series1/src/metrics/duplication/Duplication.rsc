@@ -36,7 +36,8 @@ public void workingDups() {
 	int window = 6;
 	
 	println("Building hash index");
-	list[lrel[int block,int idx,str line]] hashIndexAll = [chunkAndHashIndexed(normalize(readFileLines(x)), window) | x <- sources];
+	list[loc] sources = toList(sources);
+	list[lrel[int block,int idx,str line]] hashIndexAll = [chunkAndHashIndexed(normalize(readFileLines(sources[x-1])), window, x) | x <- [1..size(sources)+1]];
 	println("Done hash index");
 	lrel[int block,int idx,str line] hashIndex = flatten(hashIndexAll);
 	println("Extracting hash domain");
@@ -64,7 +65,7 @@ public void workingDups() {
 public void calcDups() {
 	  int window = 6;
 	  println("Started Cleaning....");
-	  list[str] linesToScan = toLines(intercalate("\n",[normalize(readFile(x)) | x <- sources]));
+	  list[str] linesToScan = toLines(intercalate("\n",[normalize(readFile(x)) | x <- take(10, toList(sources))]));
 	  println("Finished Cleaning....");
 	  map[int, int] res = run(linesToScan, window);
 
@@ -137,7 +138,7 @@ public list[list [str]] chunkAndHash(list[str] subject, int window) {
 	
 	return result;
 }
-public lrel [int block, int idx, str line] chunkAndHashIndexed(list[str] subject, int window) {
+public lrel [int block, int idx, str line] chunkAndHashIndexed(list[str] subject, int window, int fileIndex) {
 	list[str] body = subject;
 	list[str] current = take(window, subject);
 	lrel[int block, int idx, str line] result = [];
@@ -150,7 +151,7 @@ public lrel [int block, int idx, str line] chunkAndHashIndexed(list[str] subject
 		
 		for(i <- [0.. window]) {
 			str line = current[i];
-			result = push(<h, incr+i,  line>, result);
+			result = push(<h, (fileIndex * 10000)+(incr+i),  line>, result);
 		}
 		
 		
@@ -165,7 +166,7 @@ public lrel [int block, int idx, str line] chunkAndHashIndexed(list[str] subject
 // [R[{x}] | x <- domain(R), size(R[{x}]) > 4  ]
 
 public list[lrel[int,str]] huntDuplicates(list[str] lines, int window) {
-	 lrel [int block, int idx, str line] R =  chunkAndHashIndexed(lines, window);
+	 lrel [int block, int idx, str line] R =  chunkAndHashIndexed(lines, window, 1);
 	 return [ R[{x}] | x <- domain(R), size(R[{x}]) > window  ];	
 	}
 
