@@ -1,4 +1,6 @@
-module visualise::metrics::duplication
+module visualise::metrics::duplication::Duplication
+
+import visualise::helpers::SigClass;
 
 /* 
  * Visualise the duplication (SIG Grading Scheme)

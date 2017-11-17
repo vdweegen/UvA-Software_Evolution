@@ -1,6 +1,6 @@
-module visualise::metrics::volume
+module visualise::metrics::volume::Volume
 
-import visualise::sigreport;
+import visualise::helpers::SigClass;
 
 /* 
  * Visualise the volume (SIG Grading Scheme)

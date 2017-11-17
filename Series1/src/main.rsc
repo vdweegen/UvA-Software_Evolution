@@ -6,6 +6,8 @@ import lang::java::jdt::m3::Core;
 
 import List;
 
+import visualise::helpers::SigClass;
+
 // REORGANISE IMPORTS BEFORE DELIVERY!!!
 import metrics::duplication::Duplication;
 import metrics::unitcomplexity::UnitComplexity;
@@ -19,7 +21,7 @@ import aspects::testability::Testability;
 
 //import visualise::metrics::volume::Volume;
 //import visualise::metrics::unitsize::UnitSize;
-//import visualise::metrics::unitcomplexity::UnitComplexity;
+import visualise::metrics::unitcomplexity::UnitComplexity;
 //import visualise::metrics::duplication::Duplication;
 //
 //import visualise::aspects::analysability::Analysability;
@@ -33,5 +35,8 @@ public void run() {
 	p = createM3FromEclipseProject(smallProject);
 	ast = createAstsFromEclipseProject(smallProject, false);
 	
-	println("UnitComplexity: <UnitComplexity(ast)>");
+	unitcomplexity = ClassifyComplexity(UnitComplexity(ast));
+	println("UnitComplexity");
+	println("  Class  : <unitcomplexity>");
+	println("  Rank   : <ReportSigClass(unitcomplexity)>");
 }

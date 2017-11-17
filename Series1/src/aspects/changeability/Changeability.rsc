@@ -1,1 +1,1 @@
-module aspects::changeability
+module aspects::changeability::Changeability

@@ -1,6 +1,6 @@
-module visualise::metrics::unitsize
+module visualise::metrics::unitsize::UnitSize
 
-import visualise::sigreport;
+import visualise::helpers::SigClass;
 import util::Math;
 
 import List;

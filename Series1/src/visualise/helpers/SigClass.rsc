@@ -1,4 +1,4 @@
-module visualise::sigreport
+module visualise::helpers::SigClass
 
 import visualise::aspects::analysability;
 import visualise::aspects::changeability;
@@ -21,13 +21,13 @@ public str ReportSigClass(int class) {
 		return "++";
 	} else
 	if (class == 1) {
-		return " +";
+		return "+";
 	} else
 	if (class == 0) {
-		return " o";
+		return "o";
 	} else
 	if (class == -1) {
-		return " -";
+		return "-";
 	} else
 	if (class == -2) {
 		return "--";

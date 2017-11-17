@@ -1,1 +1,1 @@
-module aspects::analysability
+module aspects::analysability::Analysability

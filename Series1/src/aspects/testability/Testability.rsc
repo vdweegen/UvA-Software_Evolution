@@ -1,1 +1,1 @@
-module aspects::testability
+module aspects::testability::Testability
