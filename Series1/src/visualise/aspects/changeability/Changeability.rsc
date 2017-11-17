@@ -1,6 +1,6 @@
 module visualise::aspects::changeability
 
-import visualise::sigreport;
+import visualise::helpers::SigClass;
 
 import util::Math;
 

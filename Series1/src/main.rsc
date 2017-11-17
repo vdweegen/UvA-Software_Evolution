@@ -7,10 +7,9 @@ import lang::java::jdt::m3::Core;
 import List;
 
 // REORGANISE IMPORTS BEFORE DELIVERY!!!
-import metrics::duplication;
-import metrics::unitcomplexity;
-import metrics::unitsize;
-import metrics::unittests;
+import metrics::duplication::Duplication;
+import metrics::unitcomplexity::UnitComplexity;
+import metrics::unitsize::UnitSize;
 import metrics::volume;
 
 import aspects::analysability;
@@ -19,7 +18,6 @@ import aspects::stability;
 import aspects::testability;
 
 import visualise::metrics::volume;
-import visualise::metrics::unittests;
 import visualise::metrics::unitsize;
 import visualise::metrics::unitcomplexity;
 import visualise::metrics::duplication;
