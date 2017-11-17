@@ -12,7 +12,7 @@ import IO;
 import Set;
 import List;
 
-public lrel[int comp, int sloc] calculateComplexity(set[Declaration] ast){
+public lrel[int comp, int sloc] UnitComplexity(set[Declaration] ast){
 	lrel[int comp, int sloc] res = [];
 
 	visit (ast) {
