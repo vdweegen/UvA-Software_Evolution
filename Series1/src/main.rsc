@@ -20,7 +20,7 @@ import aspects::stability::Stability;
 import aspects::testability::Testability;
 
 import visualise::metrics::volume::Volume;
-//import visualise::metrics::unitsize::UnitSize;
+import visualise::metrics::unitsize::UnitSize;
 import visualise::metrics::unitcomplexity::UnitComplexity;
 //import visualise::metrics::duplication::Duplication;
 //
@@ -35,22 +35,26 @@ public void run() {
 	p = createM3FromEclipseProject(smallProject);
 	ast = createAstsFromEclipseProject(smallProject, false);
 	f = files(p);
+	m = methods(p);
+	
+	
+	v = ClassifyVolume(volume(f)["source_lines"]);
+	println("Volume");
+	println("  Class  : <v>");
+	println("  Rank   : <ReportSigClass(v)>\n");
 	
 	uc = ClassifyComplexity(UnitComplexity(ast));
 	println("Unit Complexity");
 	println("  Class  : <uc>");
-	println("  Rank   : <ReportSigClass(uc)>");
+	println("  Rank   : <ReportSigClass(uc)>\n");
 	
-	println("Duplication");
-	//println("  Class  : <>");
-	//println("  Rank   : <>");
-	
+	us = ClassifyUnitSize(UnitSize(m));
 	println("Unit Size");
-	//println("  Class  : <>");
-	//println("  Rank   : <>");
+	println("  Class  : <us>");
+	println("  Rank   : <ReportSigClass(us)>\n");
 	
-	println("Volume");
-	v = ClassifyVolume(volume(f)["source_lines"]);
-	println("  Class  : <v>");
-	println("  Rank   : <ReportSigClass(v)>");
+	//println("Duplication");
+	//d = Duplication(f);
+	//println("  Class  : <>");
+	//println("  Rank   : <>\n");
 }

@@ -1,18 +1,15 @@
 module metrics::unitsize::UnitSize
 
-
+import lang::java::jdt::m3::AST;
+import lang::java::jdt::m3::Core;
 
 import helpers::Normalizer;
 import metrics::volume::Volume;
+
 import List;
 import String;
 import IO;
 import Set;
-
-import lang::java::jdt::m3::AST;
-import lang::java::jdt::m3::Core;
-
-
 
 //public loc file = |project://smallsql0.21_src/src/smallsql/database/Column.java|;
 //public loc proj = |project://smallsql0.21_src|;
@@ -23,17 +20,13 @@ import lang::java::jdt::m3::Core;
 
 
 /*
-	Unit size uses the model to extract the methods and the source
-	
-*/
-
-
-public list[int] unitSize(M3 model) {
-	set[loc] projectMethods = methods(model);
-	return ([unitSize(readFile(m)) | m <- projectMethods]);
+ * Unit size uses the model to extract the methods and the source	
+ */
+public list[int] UnitSize(set[loc] projectMethods) {
+	return ([UnitSize(readFile(m)) | m <- projectMethods]);
 }
 
-public int unitSize(str source) {
+public int UnitSize(str source) {
 	return linesExtract(source);
 }
 
