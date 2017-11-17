@@ -12,7 +12,7 @@ public str VisualiseVolume(int lines) {
 	return ReportSigClass(ClassifyLinesOfCode(lines));
 }
 
-public int ClassifyLinesOfCode(int lines) {
+public int ClassifyVolume(int lines) {
 	int class;
 	if (lines < 66000) {
 		class = 2;

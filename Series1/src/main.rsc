@@ -19,7 +19,7 @@ import aspects::changeability::Changeability;
 import aspects::stability::Stability;
 import aspects::testability::Testability;
 
-//import visualise::metrics::volume::Volume;
+import visualise::metrics::volume::Volume;
 //import visualise::metrics::unitsize::UnitSize;
 import visualise::metrics::unitcomplexity::UnitComplexity;
 //import visualise::metrics::duplication::Duplication;
@@ -34,9 +34,23 @@ public loc smallProject = |project://smallsql0.21_src|;
 public void run() {
 	p = createM3FromEclipseProject(smallProject);
 	ast = createAstsFromEclipseProject(smallProject, false);
+	f = files(p);
 	
-	unitcomplexity = ClassifyComplexity(UnitComplexity(ast));
-	println("UnitComplexity");
-	println("  Class  : <unitcomplexity>");
-	println("  Rank   : <ReportSigClass(unitcomplexity)>");
+	uc = ClassifyComplexity(UnitComplexity(ast));
+	println("Unit Complexity");
+	println("  Class  : <uc>");
+	println("  Rank   : <ReportSigClass(uc)>");
+	
+	println("Duplication");
+	//println("  Class  : <>");
+	//println("  Rank   : <>");
+	
+	println("Unit Size");
+	//println("  Class  : <>");
+	//println("  Rank   : <>");
+	
+	println("Volume");
+	v = ClassifyVolume(volume(f)["source_lines"]);
+	println("  Class  : <v>");
+	println("  Rank   : <ReportSigClass(v)>");
 }
