@@ -1,6 +1,6 @@
 module visualise::aspects::testability
 
-import visualise::sigreport;
+import visualise::helpers::SigClass;
 
 import util::Math;
 

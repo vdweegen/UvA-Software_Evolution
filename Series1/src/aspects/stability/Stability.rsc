@@ -1,0 +1,1 @@
+module aspects::stability::Stability

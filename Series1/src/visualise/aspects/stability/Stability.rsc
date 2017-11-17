@@ -1,6 +1,6 @@
-module visualise::aspects::stability
+module visualise::aspects::stability::Stability
 
-import visualise::sigreport;
+import visualise::helpers::SigClass;
 
 /* 
  * Visualise the stability (SIG Grading Scheme)

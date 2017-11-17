@@ -1,6 +1,6 @@
-module visualise::metrics::unitsize
+module visualise::metrics::unitsize::UnitSize
 
-import visualise::sigreport;
+import visualise::helpers::SigClass;
 import util::Math;
 
 import List;
@@ -14,7 +14,7 @@ import List;
  
 // TODO: Look at volume.rsc
 
-public str VisualiseUnitsize(map[loc, int] lines) {
+public str VisualiseUnitsize(list[int] lines) {
 	return ReportSigClass(ClassifyLinesOfCodePerMethod(lines));
 }
 
@@ -22,9 +22,9 @@ public str VisualiseUnitsize(map[loc, int] lines) {
  * Got inspiration from: 
  *   https://www.sig.eu/files/en/01_SIG-TUViT_Evaluation_Criteria_Trusted_Product_Maintainability-Guidance_for_producers.pdf
  */
-public int ClassifyLinesOfCodePerMethod(map[loc, int] lines) {
+public int ClassifyUnitSize(list[int] lines) {
 	list[real] c = [0.0,0.0,0.0,0.0];
-	for (m <- [*lines[f] | f <- lines]) {
+	for (m <- lines) {
 		int risk = 0;
 		if (m > 15) {
 			risk = 1;

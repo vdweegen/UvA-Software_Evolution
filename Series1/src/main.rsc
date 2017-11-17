@@ -6,45 +6,58 @@ import lang::java::jdt::m3::Core;
 
 import List;
 
+import visualise::helpers::SigClass;
+
 // REORGANISE IMPORTS BEFORE DELIVERY!!!
-import metrics::duplication;
-import metrics::unitcomplexity;
-import metrics::unitsize;
-import metrics::unittests;
-import metrics::volume;
+import metrics::duplication::Duplication;
+import metrics::unitcomplexity::UnitComplexity;
+import metrics::unitsize::UnitSize;
+import metrics::volume::Volume;
 
-import aspects::analysability;
-import aspects::changeability;
-import aspects::stability;
-import aspects::testability;
+import aspects::analysability::Analysability;
+import aspects::changeability::Changeability;
+import aspects::stability::Stability;
+import aspects::testability::Testability;
 
-import visualise::metrics::volume;
-import visualise::metrics::unittests;
-import visualise::metrics::unitsize;
-import visualise::metrics::unitcomplexity;
-import visualise::metrics::duplication;
+import visualise::metrics::volume::Volume;
+import visualise::metrics::unitsize::UnitSize;
+import visualise::metrics::unitcomplexity::UnitComplexity;
+import visualise::metrics::duplication::Duplication;
 
-import visualise::aspects::analysability;
-import visualise::aspects::changeability;
-import visualise::aspects::stability;
-import visualise::aspects::testability;
+//import visualise::aspects::analysability::Analysability;
+//import visualise::aspects::changeability::Changeability;
+//import visualise::aspects::stability::Stability;
+//import visualise::aspects::testability::Testability;
 
-public loc smallProject = |project://smallsql0.21_src|;
+public loc smallProject = |project://TestProject|;
 
 public void run() {
 	p = createM3FromEclipseProject(smallProject);
 	ast = createAstsFromEclipseProject(smallProject, false);
-	
 	f = files(p);
-	println("LinesOfPrint: <size(LinesOfPrint(f))>");
-	locc = size(LinesOfCode(f));
-	println("LinesOfCode: <locc>");
-	println("LinesOfCode Rank: <VisualiseVolume(locc)>");
-	
-	println("Complexity Rank: <VisualiseComplexity(calculateComplexity(ast))>");
-	
 	m = methods(p);
-	locm = LinesOfCodePerMethod(m);
-	//println("LinesOfCodePerMethod: <locm>");
-	println("LinesOfCodePerMethod Rank: <VisualiseUnitsize(locm)>");
+	
+	
+	vol = volume(f);
+	v = ClassifyVolume(vol["source_lines"]);
+	println("Volume");
+	println("  Class  : <v>");
+	println("  Rank   : <ReportSigClass(v)>\n");
+	
+	uc = ClassifyComplexity(UnitComplexity(ast));
+	println("Unit Complexity");
+	println("  Class  : <uc>");
+	println("  Rank   : <ReportSigClass(uc)>\n");
+	
+	us = ClassifyUnitSize(UnitSize(m));
+	println("Unit Size");
+	println("  Class  : <us>");
+	println("  Rank   : <ReportSigClass(us)>\n");
+	
+	d = Duplication(f);
+
+	int duplicateClass = ClassifyDuplication(d, vol["source_lines"]);
+	println("Duplication");
+	println("  Class  : <duplicateClass>");
+	println("  Rank   : <ReportSigClass(duplicateClass)>\n");
 }
