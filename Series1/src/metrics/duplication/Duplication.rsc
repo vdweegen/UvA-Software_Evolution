@@ -6,6 +6,7 @@ import List;
 import String;
 import IO;
 import Set;
+import ListRelation;
 import util::Math;
 import ListRelation;
 import Map;
@@ -31,6 +32,34 @@ public set[loc] sources = files(model);
 */
 int primeModolus = 1000000000000000007;
 int base = 256;
+public void workingDups() {
+	int window = 6;
+	
+	println("Building hash index");
+	list[lrel[int block,int idx,str line]] hashIndexAll = [chunkAndHashIndexed(normalize(readFileLines(x)), window) | x <- sources];
+	println("Done hash index");
+	lrel[int block,int idx,str line] hashIndex = flatten(hashIndexAll);
+	println("Extracting hash domain");
+	list[int] domainHashIndex = domain(hashIndex);
+	println("Done extracting");
+	println("Compile list of all buckets larger then window size");
+	//list[lrel[int,str]] duplicateBuckets =  [ hashIndex[{x}] | x <- domainHashIndex, size(hashIndex[{x}]) > window ];
+	list[lrel[int,str]] newDup = [];
+	newDup = for(x <-domainHashIndex) {
+		bucket = hashIndex[{x}];
+		if (size(bucket) > window) {
+			append(bucket);
+		}
+		
+	}
+	//list[lrel[int,str]] duplicateBuckets =  [ hashIndex[{x}] | x <- domainHashIndex, size(hashIndex[{x}]) > window ];
+	
+	// count unique lines in duplicateBuckets
+	println("Count unique lines in duplicateBuckets");
+	print(size(dup(flatten(newDup))));
+	
+}
+
 
 public void calcDups() {
 	  int window = 6;
@@ -91,6 +120,56 @@ public map[int, int] run(list[str] linesToScan, int window) {
 	
 }
 
+public list[list [str]] chunkAndHash(list[str] subject, int window) {
+	list[str] body = subject;
+	list[str] current = take(window, subject);
+	list[list[str]] result = [];
+	int incr = 0;
+	
+	while(size(current) == window) {
+		int h = hash(intercalate("\n",current));
+	
+		incr+=1;
+		result = push(current, result);
+		body = drop(incr,subject);
+		current = take(window, body);
+	}
+	
+	return result;
+}
+public lrel [int block, int idx, str line] chunkAndHashIndexed(list[str] subject, int window) {
+	list[str] body = subject;
+	list[str] current = take(window, subject);
+	lrel[int block, int idx, str line] result = [];
+	int incr = 0;
+	
+	while(size(current) == window) {
+		int h = hash(intercalate("\n",current));
+	
+		incr+=1;
+		
+		for(i <- [0.. window]) {
+			str line = current[i];
+			result = push(<h, incr+i,  line>, result);
+		}
+		
+		
+		body = drop(incr,subject);
+		current = take(window, body);
+	}
+	
+	return result;
+}
+//dup(flatten(toList(domain(rangeX(distribution(chunkAndHash(abc, 2)), {1}))))) DUPLICATION ONE LINER !
+// R = chunkAndHashIndexed(abc, 4)
+// [R[{x}] | x <- domain(R), size(R[{x}]) > 4  ]
+
+public list[lrel[int,str]] huntDuplicates(list[str] lines, int window) {
+	 lrel [int block, int idx, str line] R =  chunkAndHashIndexed(lines, window);
+	 return [ R[{x}] | x <- domain(R), size(R[{x}]) > window  ];	
+	}
+
+public list[&T] flatten(list[list[&T]] toFlat) = ([]| it + innerList| innerList<- toFlat);
 
 public str combineAll(set[loc] sources) {
 	return intercalate("\n", [readFile(x) | x <- sources]);
