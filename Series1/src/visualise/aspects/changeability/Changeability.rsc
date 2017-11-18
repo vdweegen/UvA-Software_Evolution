@@ -1,4 +1,4 @@
-module visualise::aspects::changeability
+module visualise::aspects::changeability::Changeability
 
 import visualise::helpers::SigClass;
 
@@ -12,7 +12,6 @@ import util::Math;
  * 	for the scope of the current project we assume the project
  *  to be JAVA, but leave room for future extension.
  */
- 
 public str VisualiseChangeability(int unitcomplexityClass, int duplicationClass) {
 	return ReportSigClass(ClassifyChangeability(unitcomplexityClass, duplicationClass));
 }

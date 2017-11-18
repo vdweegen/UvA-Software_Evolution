@@ -25,10 +25,10 @@ import visualise::metrics::unitsize::UnitSize;
 import visualise::metrics::unitcomplexity::UnitComplexity;
 import visualise::metrics::duplication::Duplication;
 
-//import visualise::aspects::analysability::Analysability;
-//import visualise::aspects::changeability::Changeability;
-//import visualise::aspects::stability::Stability;
-//import visualise::aspects::testability::Testability;
+import visualise::aspects::analysability::Analysability;
+import visualise::aspects::changeability::Changeability;
+import visualise::aspects::stability::Stability;
+import visualise::aspects::testability::Testability;
 
 public loc smallProject = |project://smallsql0.21_src|;
 
@@ -41,29 +41,60 @@ public void run() {
 	
 	map[str, int] codeVolume = volume(f);
 	int volumeClass = ClassifyVolume(codeVolume["source_lines"]);
-	println("Volume");
-	println("  Class  : <volumeClass>");
-	println("  Rank   : <ReportSigClass(volumeClass)>");
+	println("\nVolume");
+	println("  Class         : <volumeClass>");
+	println("  Rank          : <ReportSigClass(volumeClass)>");
 	println("  Total lines   : <codeVolume["total_lines"]>");
 	println("  Source lines  : <codeVolume["source_lines"]>");
-	println("");
 	
 	int unitComplexityClass = ClassifyComplexity(UnitComplexity(ast));
-	println("Unit Complexity");
-	println("  Class  : <unitComplexityClass>");
-	println("  Rank   : <ReportSigClass(unitComplexityClass)>\n");
+	println("\nUnit Complexity");
+	println("  Class         : <unitComplexityClass>");
+	println("  Rank          : <ReportSigClass(unitComplexityClass)>");
 	
 	int unitSizeClass = ClassifyUnitSize(UnitSize(m));
-	println("Unit Size");
-	println("  Class  : <unitSizeClass>");
-	println("  Rank   : <ReportSigClass(unitSizeClass)>\n");
+	println("\nUnit Size");
+	println("  Class         : <unitSizeClass>");
+	println("  Rank          : <ReportSigClass(unitSizeClass)>");
 	
 	
 	int duplicateLines = Duplication(f);
 
-	int duplicateClass = ClassifyDuplication(duplicateLines, codeVolume["source_lines"]);
-	println("Duplication");
-	println("  Class  : <duplicateClass>");
-	println("  Rank   : <ReportSigClass(duplicateClass)>");
-	println("  Percentage : <toReal(duplicateLines) / codeVolume["source_lines"] * 100>\n");
+	int duplicationClass = ClassifyDuplication(duplicateLines, codeVolume["source_lines"]);
+	println("\nDuplication");
+	println("  Class         : <duplicationClass>");
+	println("  Rank          : <ReportSigClass(duplicationClass)>");
+	println("  Percentage    : <toReal(duplicateLines) / codeVolume["source_lines"] * 100>%\n");
+
+	println("\nSIG Maintainability Model");
+	
+	// NOTE: We dont have unittesting
+	int analysabilityClass = ClassifyAnalysability(volumeClass, duplicationClass, unitSizeClass);
+	println("\nAnalysability");
+	println("  Class         : <analysabilityClass>");
+	println("  Rank          : <ReportSigClass(analysabilityClass)>");
+	println("  SIG Score     : <ReportSigScore(analysabilityClass)>");
+	
+	int changeabilityClass = ClassifyChangeability(unitComplexityClass, duplicationClass);
+	println("\nChangeability");
+	println("  Class         : <changeabilityClass>");
+	println("  Rank          : <ReportSigClass(changeabilityClass)>");
+	println("  SIG Score     : <ReportSigScore(changeabilityClass)>");
+	
+	// NOTE: We dont have unittesting
+	int stabilityClass = ClassifyStability();
+	println("\nStability");
+	println("  Class         : <stabilityClass>");
+	println("  Rank          : <ReportSigClass(stabilityClass)>");
+	println("  SIG Score     : <ReportSigScore(stabilityClass)>");
+	
+	// NOTE: We dont have unittesting
+	int testabilityClass = ClassifyTestability(unitComplexityClass, unitSizeClass);
+	println("\nTestability");
+	println("  Class         : <testabilityClass>");
+	println("  Rank          : <ReportSigClass(testabilityClass)>");
+	println("  SIG Score     : <ReportSigScore(testabilityClass)>");
+	
+	int avgTotalScore = round((analysabilityClass + changeabilityClass + stabilityClass + testabilityClass)/4);
+	println("\nSIG Grade       : <ReportSigScore(avgTotalScore)>");
 }

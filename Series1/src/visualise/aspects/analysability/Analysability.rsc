@@ -1,4 +1,4 @@
-module visualise::aspects::analysability
+module visualise::aspects::analysability::Analysability
 
 import visualise::helpers::SigClass;
 
@@ -13,11 +13,11 @@ import util::Math;
  *  to be JAVA, but leave room for future extension.
  */
  
-public str VisualiseAnalysability(int volumeClass, int duplicationClass, int unitsizeClass, int unittestingClass) {
+public str VisualiseAnalysability(int volumeClass, int duplicationClass, int unitsizeClass, int unittestingClass = 0) {
 	return ReportSigClass(ClassifyAnalysability(volumeClass, duplicationClass, unitsizeClass, unittestingClass));
 }
 
 public int ClassifyAnalysability(int volumeClass, int duplicationClass,
-	int unitsizeClass, int unittestingClass) {
+	int unitsizeClass, int unittestingClass = 0) {
 	return round(volumeClass + duplicationClass + unitsizeClass + unittestingClass) / 4;
 }
