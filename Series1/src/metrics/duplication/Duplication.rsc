@@ -35,23 +35,38 @@ public int Duplication(set[loc] filelist) {
 	
 	//println("Building hash index");
 	list[loc] sources = toList(filelist);
-	list[lrel[int block, int idx, str line]] hashIndexAll = [chunkAndHashIndexed(normalize(readFileLines(sources[x-1])), window, x) | x <- [1..size(sources)+1]];
+	
+	lrel[int block, int idx, str line] hashIndex = ([] | it + chunkAndHashIndexed(normalize(readFileLines(sources[x-1])), window, x) | x <- [1..size(sources)+1]);
 	//println("Done hash index");
-	lrel[int block, int idx, str line] hashIndex = flatten(hashIndexAll);
-	//println("Extracting hash domain");
-	list[int] domainHashIndex = domain(hashIndex);
+	//lrel[int block, int idx, str line] hashIndex = flatten(hashIndexAll);
+//	println("Extracting hash domain");
+//    println ("group by range");
+    
+    v =domain( rangeX ( distribution (hashIndex.block),{window}));
+//    println ( size(v));
+////    println ("done");
+	//list[int] domainHashIndex = domain(hashIndex);
+	
 	//println("Done extracting");
 	//println("Compile list of all buckets larger then window size");
-	list[lrel[int, str]] newDup = [];
-	newDup = for(x <- domainHashIndex) {
-		bucket = hashIndex[{x}];
-		if (size(bucket) > window) {
-			append(bucket);
-		}
-		
-	}
+	//list[lrel[int, str]] newDup = [];
+	//newDup = for(x <- domainHashIndex) {
+	//	bucket = hashIndex[{x}];
+	//	if (size(bucket) > window) {
+	//		append(bucket);
+	//	}
+	//	
+	//}
+	lrel[int, str] newDup = ([] | it + hashIndex[{x}]| x <- v);
+	//newDup = for(x <- domainHashIndex) {
+	//	bucket = hashIndex[{x}];
+	//	if (size(bucket) > window) {
+	//		append(bucket);
+	//	}
+	//	
+	//}
 	//println("Count unique lines in duplicateBuckets");
-	return size(dup(flatten(newDup)));
+	return size(dup(newDup));
 }
 
 

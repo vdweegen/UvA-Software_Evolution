@@ -7,6 +7,7 @@ import lang::java::jdt::m3::Core;
 import List;
 
 import visualise::helpers::SigClass;
+import util::Math;
 
 // REORGANISE IMPORTS BEFORE DELIVERY!!!
 import metrics::duplication::Duplication;
@@ -29,7 +30,7 @@ import visualise::metrics::duplication::Duplication;
 //import visualise::aspects::stability::Stability;
 //import visualise::aspects::testability::Testability;
 
-public loc smallProject = |project://TestProject|;
+public loc smallProject = |project://hsqldb-2.3.1/src/|;
 
 public void run() {
 	p = createM3FromEclipseProject(smallProject);
@@ -59,5 +60,6 @@ public void run() {
 	int duplicateClass = ClassifyDuplication(d, vol["source_lines"]);
 	println("Duplication");
 	println("  Class  : <duplicateClass>");
-	println("  Rank   : <ReportSigClass(duplicateClass)>\n");
+	println("  Rank   : <ReportSigClass(duplicateClass)>");
+	println("  Percentage : <percent(d, vol["source_lines"])>\n");
 }

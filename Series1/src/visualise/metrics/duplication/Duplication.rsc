@@ -14,7 +14,7 @@ public str VisualiseDuplication(int dups, int total) {
 
 public int ClassifyDuplication(int dups, int total) {
 	int class;
-	int d = percent(dups, total);
+	real d = toReal(dups) /toReal ( total) * 100;
 	if (d <= 3) {
 		class = 2;
 	} else
