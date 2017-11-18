@@ -39,21 +39,21 @@ public void run() {
 	m = methods(p);
 	
 	
-	vol = volume(f);
-	volumeClass = ClassifyVolume(vol["source_lines"]);
+	map[str, int] codeVolume = volume(f);
+	int volumeClass = ClassifyVolume(codeVolume["source_lines"]);
 	println("Volume");
 	println("  Class  : <volumeClass>");
 	println("  Rank   : <ReportSigClass(volumeClass)>");
-	println("  Total lines   : <vol["total_lines"]>");
-	println("  Source lines  : <vol["source_lines"]>");
+	println("  Total lines   : <codeVolume["total_lines"]>");
+	println("  Source lines  : <codeVolume["source_lines"]>");
 	println("");
 	
-	unitComplexityClass = ClassifyComplexity(UnitComplexity(ast));
+	int unitComplexityClass = ClassifyComplexity(UnitComplexity(ast));
 	println("Unit Complexity");
 	println("  Class  : <unitComplexityClass>");
 	println("  Rank   : <ReportSigClass(unitComplexityClass)>\n");
 	
-	unitSizeClass = ClassifyUnitSize(UnitSize(m));
+	int unitSizeClass = ClassifyUnitSize(UnitSize(m));
 	println("Unit Size");
 	println("  Class  : <unitSizeClass>");
 	println("  Rank   : <ReportSigClass(unitSizeClass)>\n");
@@ -61,9 +61,9 @@ public void run() {
 	
 	int duplicateLines = Duplication(f);
 
-	int duplicateClass = ClassifyDuplication(duplicateLines, vol["source_lines"]);
+	int duplicateClass = ClassifyDuplication(duplicateLines, codeVolume["source_lines"]);
 	println("Duplication");
 	println("  Class  : <duplicateClass>");
 	println("  Rank   : <ReportSigClass(duplicateClass)>");
-	println("  Percentage : <toReal(duplicateLines) / vol["source_lines"] * 100>\n");
+	println("  Percentage : <toReal(duplicateLines) / codeVolume["source_lines"] * 100>\n");
 }
