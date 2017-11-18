@@ -30,7 +30,7 @@ import visualise::metrics::duplication::Duplication;
 //import visualise::aspects::stability::Stability;
 //import visualise::aspects::testability::Testability;
 
-public loc smallProject = |project://hsqldb-2.3.1/src/|;
+public loc smallProject = |project://smallsql0.21_src|;
 
 public void run() {
 	p = createM3FromEclipseProject(smallProject);
@@ -40,26 +40,30 @@ public void run() {
 	
 	
 	vol = volume(f);
-	v = ClassifyVolume(vol["source_lines"]);
+	volumeClass = ClassifyVolume(vol["source_lines"]);
 	println("Volume");
-	println("  Class  : <v>");
-	println("  Rank   : <ReportSigClass(v)>\n");
+	println("  Class  : <volumeClass>");
+	println("  Rank   : <ReportSigClass(volumeClass)>");
+	println("  Total lines   : <vol["total_lines"]>");
+	println("  Source lines  : <vol["source_lines"]>");
+	println("");
 	
-	uc = ClassifyComplexity(UnitComplexity(ast));
+	unitComplexityClass = ClassifyComplexity(UnitComplexity(ast));
 	println("Unit Complexity");
-	println("  Class  : <uc>");
-	println("  Rank   : <ReportSigClass(uc)>\n");
+	println("  Class  : <unitComplexityClass>");
+	println("  Rank   : <ReportSigClass(unitComplexityClass)>\n");
 	
-	us = ClassifyUnitSize(UnitSize(m));
+	unitSizeClass = ClassifyUnitSize(UnitSize(m));
 	println("Unit Size");
-	println("  Class  : <us>");
-	println("  Rank   : <ReportSigClass(us)>\n");
+	println("  Class  : <unitSizeClass>");
+	println("  Rank   : <ReportSigClass(unitSizeClass)>\n");
 	
-	d = Duplication(f);
+	
+	int duplicateLines = Duplication(f);
 
-	int duplicateClass = ClassifyDuplication(d, vol["source_lines"]);
+	int duplicateClass = ClassifyDuplication(duplicateLines, vol["source_lines"]);
 	println("Duplication");
 	println("  Class  : <duplicateClass>");
 	println("  Rank   : <ReportSigClass(duplicateClass)>");
-	println("  Percentage : <percent(d, vol["source_lines"])>\n");
+	println("  Percentage : <toReal(duplicateLines) / vol["source_lines"] * 100>\n");
 }
