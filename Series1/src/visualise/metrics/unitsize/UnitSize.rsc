@@ -4,16 +4,13 @@ import visualise::helpers::SigClass;
 import util::Math;
 
 import List;
-//import IO;
+import IO;
 
 /* 
  * Visualise the unitsize (SIG Grading Scheme)
  * 	for the scope of the current project we assume the project
  *  to be JAVA, but leave room for future extension.
  */
- 
-// TODO: Look at volume.rsc
-
 public str VisualiseUnitsize(list[int] lines) {
 	return ReportSigClass(ClassifyLinesOfCodePerMethod(lines));
 }
@@ -40,10 +37,11 @@ public int ClassifyUnitSize(list[int] lines) {
 	real total = sum(c);
 	int class = 2;
 	
-	//println("No risk: <c[0] / total * 100>%");
-	//println("Low risk: <c[1] / total * 100>%");
-	//println("Medium risk: <c[2] / total * 100>%");
-	//println("High risk: <c[3] / total * 100>%");
+	println("  Percentages");
+	println("    No risk     : <c[0] / total * 100>%");
+	println("    Low risk    : <c[1] / total * 100>%");
+	println("    Medium risk : <c[2] / total * 100>%");
+	println("    High risk   : <c[3] / total * 100>%");
 	
 	if (c[3] > 0) {
 		class -= 1;

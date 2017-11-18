@@ -1,4 +1,4 @@
-module visualise::aspects::testability
+module visualise::aspects::testability::Testability
 
 import visualise::helpers::SigClass;
 
@@ -12,11 +12,10 @@ import util::Math;
  * 	for the scope of the current project we assume the project
  *  to be JAVA, but leave room for future extension.
  */
- 
-public str VisualiseTestability(int unitcomplexityClass, int unitsizeClass, int unittestingClass) {
+public str VisualiseTestability(int unitcomplexityClass, int unitsizeClass, int unittestingClass = 0) {
 	return ReportSigClass(ClassifyTestability(unitcomplexityClass, unitsizeClass, unittestingClass));
 }
 
-public int ClassifyTestability(int unitcomplexityClass, int unitsizeClass, int unittestingClass) {
+public int ClassifyTestability(int unitcomplexityClass, int unitsizeClass, int unittestingClass = 0) {
 	return round(unitcomplexityClass + unitsizeClass + unittestingClass) / 3;
 }

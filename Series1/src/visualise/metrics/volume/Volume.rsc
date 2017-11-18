@@ -9,7 +9,7 @@ import visualise::helpers::SigClass;
  */
  
 public str VisualiseVolume(int lines) {
-	return ReportSigClass(ClassifyLinesOfCode(lines));
+	return ReportSigClass(ClassifyVolume(lines));
 }
 
 public int ClassifyVolume(int lines) {

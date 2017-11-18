@@ -1,72 +1,59 @@
-module main
+import visualise::aspects::analysability::Analysability;
+import visualise::aspects::changeability::Changeability;
+import visualise::aspects::stability::Stability;
+import visualise::aspects::testability::Testability;
+	map[str, int] codeVolume = volume(f);
+	int volumeClass = ClassifyVolume(codeVolume["source_lines"]);
+	println("\nVolume");
+	println("  Class         : <volumeClass>");
+	println("  Rank          : <ReportSigClass(volumeClass)>");
+	println("  Total lines   : <codeVolume["total_lines"]>");
+	println("  Source lines  : <codeVolume["source_lines"]>");
 
-import IO;
-import lang::java::jdt::m3::AST;
-import lang::java::jdt::m3::Core;
+	int unitComplexityClass = ClassifyComplexity(UnitComplexity(ast));
+	println("\nUnit Complexity");
+	println("  Class         : <unitComplexityClass>");
+	println("  Rank          : <ReportSigClass(unitComplexityClass)>");
 
-import List;
+	int unitSizeClass = ClassifyUnitSize(UnitSize(m));
+	println("\nUnit Size");
+	println("  Class         : <unitSizeClass>");
+	println("  Rank          : <ReportSigClass(unitSizeClass)>");
 
-import visualise::helpers::SigClass;
-import util::Math;
+	int duplicationClass = ClassifyDuplication(duplicateLines, codeVolume["source_lines"]);
+	println("\nDuplication");
+	println("  Class         : <duplicationClass>");
+	println("  Rank          : <ReportSigClass(duplicationClass)>");
+	println("  Percentage    : <toReal(duplicateLines) / codeVolume["source_lines"] * 100>%\n");
 
-// REORGANISE IMPORTS BEFORE DELIVERY!!!
-import metrics::duplication::Duplication;
-import metrics::unitcomplexity::UnitComplexity;
-import metrics::unitsize::UnitSize;
-import metrics::volume::Volume;
-
-import aspects::analysability::Analysability;
-import aspects::changeability::Changeability;
-import aspects::stability::Stability;
-import aspects::testability::Testability;
-
-import visualise::metrics::volume::Volume;
-import visualise::metrics::unitsize::UnitSize;
-import visualise::metrics::unitcomplexity::UnitComplexity;
-import visualise::metrics::duplication::Duplication;
-
-//import visualise::aspects::analysability::Analysability;
-//import visualise::aspects::changeability::Changeability;
-//import visualise::aspects::stability::Stability;
-//import visualise::aspects::testability::Testability;
-
-public loc smallProject = |project://hsqldb-2.3.1|;
-
-public void run() {
-	p = createM3FromEclipseProject(smallProject);
-	ast = createAstsFromEclipseProject(smallProject, false);
-	f = files(p);
-	m = methods(p);
+	println("\nSIG Maintainability Model");
 	
+	// NOTE: We dont have unittesting
+	int analysabilityClass = ClassifyAnalysability(volumeClass, duplicationClass, unitSizeClass);
+	println("\nAnalysability");
+	println("  Class         : <analysabilityClass>");
+	println("  Rank          : <ReportSigClass(analysabilityClass)>");
+	println("  SIG Score     : <ReportSigScore(analysabilityClass)>");
 	
-	vol = volume(f);
-	volumeClass = ClassifyVolume(vol["source_lines"]);
-	println("Volume");
-	println("  Class  : <volumeClass>");
-	println("  Rank   : <ReportSigClass(volumeClass)>");
-	println("  Total lines   : <vol["total_lines"]>");
-	println("  Source lines  : <vol["source_lines"]>");
-	println("");
+	int changeabilityClass = ClassifyChangeability(unitComplexityClass, duplicationClass);
+	println("\nChangeability");
+	println("  Class         : <changeabilityClass>");
+	println("  Rank          : <ReportSigClass(changeabilityClass)>");
+	println("  SIG Score     : <ReportSigScore(changeabilityClass)>");
 	
-	unitComplexityClass = ClassifyComplexity(UnitComplexity(ast));
-	println("Unit Complexity");
-	println("  Class  : <unitComplexityClass>");
-	println("  Rank   : <ReportSigClass(unitComplexityClass)>");
-	println("");
+	// NOTE: We dont have unittesting
+	int stabilityClass = ClassifyStability();
+	println("\nStability");
+	println("  Class         : <stabilityClass>");
+	println("  Rank          : <ReportSigClass(stabilityClass)>");
+	println("  SIG Score     : <ReportSigScore(stabilityClass)>");
 	
-	unitSizeClass = ClassifyUnitSize(UnitSize(m));
-	println("Unit Size");
-	println("  Class  : <unitSizeClass>");
-	println("  Rank   : <ReportSigClass(unitSizeClass)>");
-	println("");
+	// NOTE: We dont have unittesting
+	int testabilityClass = ClassifyTestability(unitComplexityClass, unitSizeClass);
+	println("\nTestability");
+	println("  Class         : <testabilityClass>");
+	println("  Rank          : <ReportSigClass(testabilityClass)>");
+	println("  SIG Score     : <ReportSigScore(testabilityClass)>");
 	
-	int duplicateLines = Duplication(f);
-
-	int duplicateClass = ClassifyDuplication(duplicateLines, vol["source_lines"]);
-	println("Duplication");
-	println("  Class  : <duplicateClass>");
-	println("  Rank   : <ReportSigClass(duplicateClass)>");
-	println("  Percentage : <toReal(duplicateLines) / vol["source_lines"] * 100>");
-	println("  Duplicate lines: <duplicateLines>");
-	println("");
-}
+	int avgTotalScore = round((analysabilityClass + changeabilityClass + stabilityClass + testabilityClass)/4);
+	println("\nSIG Grade       : <ReportSigScore(avgTotalScore)>");

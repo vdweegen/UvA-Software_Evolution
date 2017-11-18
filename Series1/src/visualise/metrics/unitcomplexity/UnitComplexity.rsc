@@ -4,6 +4,7 @@ import visualise::helpers::SigClass;
 
 import util::Math;
 import List;
+import IO;
 
 /* 
  * Visualise the unitcomplexity (SIG Grading Scheme)
@@ -31,10 +32,11 @@ public int ClassifyComplexity(lrel[int, int] rels) {
 	}
 	real total = sum(c);
 	
-	//println("No risk: <c[0] / total * 100>%");
-	//println("Low risk: <c[1] / total * 100>%");
-	//println("Medium risk: <c[2] / total * 100>%");
-	//println("High risk: <c[3] / total * 100>%");
+	println("  Percentages");
+	println("    No risk     : <c[0] / total * 100>%");
+	println("    Low risk    : <c[1] / total * 100>%");
+	println("    Medium risk : <c[2] / total * 100>%");
+	println("    High risk   : <c[3] / total * 100>%");
 	
 	int class;
 	
