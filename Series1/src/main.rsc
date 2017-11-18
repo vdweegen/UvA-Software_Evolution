@@ -64,8 +64,8 @@ public void run() {
 	println("\nDuplication");
 	println("  Class         : <duplicationClass>");
 	println("  Rank          : <ReportSigClass(duplicationClass)>");
-	println("  Percentage    : <toReal(duplicateLines) / codeVolume["source_lines"] * 100>%\n");
-
+	println("  Percentage    : <toReal(duplicateLines) / codeVolume["source_lines"] * 100>%");
+	println("  Duplicates    : <duplicateLines>\n");
 	println("\nSIG Maintainability Model");
 	
 	// NOTE: We dont have unittesting
