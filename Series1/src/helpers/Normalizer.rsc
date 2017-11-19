@@ -43,7 +43,7 @@ public str removeComments(str source) {
 	return normalized;
 }
 
-public list[str] removeEmptyLines(list[str] lines) = [line | line <- lines, trim(line) notin {""}];
+public list[str] removeEmptyLines(list[str] lines) = [trim(line) | line <- lines, trim(line) notin {""}];
 
 
 public list[str] comments(str example) {

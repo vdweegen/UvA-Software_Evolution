@@ -8,6 +8,7 @@ import List;
 
 import visualise::helpers::SigClass;
 import util::Math;
+import util::Benchmark;
 
 // REORGANISE IMPORTS BEFORE DELIVERY!!!
 import metrics::duplication::Duplication;
@@ -33,6 +34,7 @@ import visualise::aspects::testability::Testability;
 public loc smallProject = |project://smallsql0.21_src|;
 
 public void run() {
+	int startTime = realTime();
 	p = createM3FromEclipseProject(smallProject);
 	ast = createAstsFromEclipseProject(smallProject, false);
 	f = files(p);
@@ -96,5 +98,6 @@ public void run() {
 	println("  SIG Score     : <ReportSigScore(testabilityClass)>");
 	
 	int avgTotalScore = round((analysabilityClass + changeabilityClass + stabilityClass + testabilityClass)/4);
-	println("\nSIG Grade       : <ReportSigScore(avgTotalScore)>");
+	println("\nSIG Grade       : <ReportSigScore(avgTotalScore)>\n");
+	println("Time taken <((realTime() - startTime) / 1000)> seconds");
 }
