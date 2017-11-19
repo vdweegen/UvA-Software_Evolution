@@ -30,13 +30,13 @@ import visualise::aspects::analysability::Analysability;
 import visualise::aspects::changeability::Changeability;
 import visualise::aspects::stability::Stability;
 import visualise::aspects::testability::Testability;
-
+public loc largeProject = |project://hsqldb-2.3.1/src/|;
 public loc smallProject = |project://smallsql0.21_src|;
 
 public void run() {
 	int startTime = realTime();
-	p = createM3FromEclipseProject(smallProject);
-	ast = createAstsFromEclipseProject(smallProject, false);
+	p = createM3FromEclipseProject(largeProject);
+	ast = createAstsFromEclipseProject(largeProject, false);
 	f = files(p);
 	m = methods(p);
 	
