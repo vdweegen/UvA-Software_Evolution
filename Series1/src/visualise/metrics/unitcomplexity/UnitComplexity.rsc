@@ -15,28 +15,31 @@ public str VisualiseComplexity(lrel[int, int] rels) {
 	return ReportSigClass(ClassifyComplexity(rels));
 }
 
-public int ClassifyComplexity(lrel[int, int] rels) {
+
+public list[real] partitionComplexity(lrel[int, int] rels) {
 	list[real] c = [0.0,0.0,0.0,0.0];
 	for (s <- rels) {
 		int risk = 0;
-		if (s[0] > 10) {
-			risk = 1;
+		if (s[0] >= 50) {
+			risk = 3;
 		} else
-		if (s[0] > 20) {
+		if (s[0] >= 20) {
 			risk = 2;
 		} else
-		if (s[0] > 50) {
-			risk = 3;
+		if (s[0] >= 10) {
+			risk = 1;
 		}
 		c[risk] += s[1];
 	}
+	return c;
+}
+
+public int ClassifyComplexity(lrel[int, int] rels) {
+	list[real] c = partitionComplexity(rels);
+	
 	real total = sum(c);
 	
-	println("  Percentages");
-	println("    No risk     : <c[0] / total * 100>%");
-	println("    Low risk    : <c[1] / total * 100>%");
-	println("    Medium risk : <c[2] / total * 100>%");
-	println("    High risk   : <c[3] / total * 100>%");
+	
 	
 	int class;
 	

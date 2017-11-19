@@ -16,14 +16,14 @@ import Set;
 import util::Math;
 
 //public loc file = |project://smallsql0.21_src/src/smallsql/database/Column.java|;
-public loc file = |project://smallsql0.21_src/src/smallsql/junit/TestAlterTable2.java|;
-
-public loc proj = |project://hsqldb-2.3.1|;
-public M3 model = createM3FromEclipseProject(proj);
-public set[Declaration] astProj = createAstsFromEclipseProject(proj, true);
-public M3 modelFile = createM3FromFile(file);
-public set[loc] sources = files(model);
-public str source = readFile(file);
+//public loc file = |project://smallsql0.21_src/src/smallsql/junit/TestAlterTable2.java|;
+//
+//public loc proj = |project://hsqldb-2.3.1|;
+//public M3 model = createM3FromEclipseProject(proj);
+//public set[Declaration] astProj = createAstsFromEclipseProject(proj, true);
+//public M3 modelFile = createM3FromFile(file);
+//public set[loc] sources = files(model);
+//public str source = readFile(file);
 
 public list[int] UnitTestCount(set[loc] projectMethods) {
 	return ([UnitTestCount(readFile(m)) | m <- projectMethods]);

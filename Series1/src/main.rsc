@@ -32,7 +32,7 @@ import visualise::aspects::analysability::Analysability;
 import visualise::aspects::changeability::Changeability;
 import visualise::aspects::stability::Stability;
 import visualise::aspects::testability::Testability;
-public loc largeProject = |project://hsqldb-2.3.1/src/|;
+//public loc largeProject = |project://hsqldb-2.3.1/src/|;
 public loc smallProject = |project://smallsql0.21_src|;
 public loc targetProject = smallProject;
 
@@ -57,10 +57,29 @@ public void run() {
 	println("  Class         : <unitComplexityClass>");
 	println("  Rank          : <ReportSigClass(unitComplexityClass)>");
 	
+	list[real] c = partitionComplexity(UnitComplexity(ast));
+	real ctotal = sum(c);
+	println("  Percentages");
+	println("    No risk     : <c[0] / ctotal * 100>%");
+	println("    Low risk    : <c[1] / ctotal * 100>%");
+	println("    Medium risk : <c[2] / ctotal * 100>%");
+	println("    High risk   : <c[3] / ctotal * 100>%");
+	
 	int unitSizeClass = ClassifyUnitSize(UnitSize(m));
 	println("\nUnit Size");
 	println("  Class         : <unitSizeClass>");
 	println("  Rank          : <ReportSigClass(unitSizeClass)>");
+	
+	list[real] usp = partitionUnitSize(UnitSize(m));
+	real ustotal = sum(usp);
+	println("  Percentages");
+	println("    No risk     : <usp[0] / ustotal * 100>%");
+	println("    Low risk    : <usp[1] / ustotal * 100>%");
+	println("    Medium risk : <usp[2] / ustotal * 100>%");
+	println("    High risk   : <usp[3] / ustotal * 100>%");
+	
+	
+	
 	
 	real unitTestResult = UnitTest(ast);
 	int unitTestClass = ClassifyUnitTest(unitTestResult);
