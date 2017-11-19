@@ -14,6 +14,7 @@ import util::Benchmark;
 import metrics::duplication::Duplication;
 import metrics::unitcomplexity::UnitComplexity;
 import metrics::unitsize::UnitSize;
+import metrics::unittest::UnitTest;
 import metrics::volume::Volume;
 
 import aspects::analysability::Analysability;
@@ -25,6 +26,7 @@ import visualise::metrics::volume::Volume;
 import visualise::metrics::unitsize::UnitSize;
 import visualise::metrics::unitcomplexity::UnitComplexity;
 import visualise::metrics::duplication::Duplication;
+import visualise::metrics::unittest::UnitTest;
 
 import visualise::aspects::analysability::Analysability;
 import visualise::aspects::changeability::Changeability;
@@ -32,11 +34,12 @@ import visualise::aspects::stability::Stability;
 import visualise::aspects::testability::Testability;
 public loc largeProject = |project://hsqldb-2.3.1/src/|;
 public loc smallProject = |project://smallsql0.21_src|;
+public loc targetProject = smallProject;
 
 public void run() {
 	int startTime = realTime();
-	p = createM3FromEclipseProject(largeProject);
-	ast = createAstsFromEclipseProject(largeProject, false);
+	p = createM3FromEclipseProject(targetProject);
+	ast = createAstsFromEclipseProject(targetProject, false);
 	f = files(p);
 	m = methods(p);
 	
@@ -59,6 +62,13 @@ public void run() {
 	println("  Class         : <unitSizeClass>");
 	println("  Rank          : <ReportSigClass(unitSizeClass)>");
 	
+	real unitTestResult = UnitTest(ast);
+	int unitTestClass = ClassifyUnitTest(unitTestResult);
+	println("\nUnit Test quality");
+	println("  Class         : <unitTestClass>");
+	println("  Rank          : <ReportSigClass(unitTestClass)>");
+	println("  Avg. Percentage: <unitTestResult>");
+	
 	
 	int duplicateLines = Duplication(f);
 
@@ -68,9 +78,11 @@ public void run() {
 	println("  Rank          : <ReportSigClass(duplicationClass)>");
 	println("  Percentage    : <toReal(duplicateLines) / codeVolume["source_lines"] * 100>%");
 	println("  Duplicates    : <duplicateLines>\n");
-	println("\nSIG Maintainability Model");
+
+
 	
-	// NOTE: We dont have unittesting
+	println("\nSIG Maintainability Model");
+		
 	int analysabilityClass = ClassifyAnalysability(volumeClass, duplicationClass, unitSizeClass);
 	println("\nAnalysability");
 	println("  Class         : <analysabilityClass>");
@@ -83,15 +95,15 @@ public void run() {
 	println("  Rank          : <ReportSigClass(changeabilityClass)>");
 	println("  SIG Score     : <ReportSigScore(changeabilityClass)>");
 	
-	// NOTE: We dont have unittesting
+
 	int stabilityClass = ClassifyStability();
 	println("\nStability");
 	println("  Class         : <stabilityClass>");
 	println("  Rank          : <ReportSigClass(stabilityClass)>");
 	println("  SIG Score     : <ReportSigScore(stabilityClass)>");
 	
-	// NOTE: We dont have unittesting
-	int testabilityClass = ClassifyTestability(unitComplexityClass, unitSizeClass);
+
+	int testabilityClass = ClassifyTestability(unitComplexityClass, unitSizeClass, unitTestClass);
 	println("\nTestability");
 	println("  Class         : <testabilityClass>");
 	println("  Rank          : <ReportSigClass(testabilityClass)>");

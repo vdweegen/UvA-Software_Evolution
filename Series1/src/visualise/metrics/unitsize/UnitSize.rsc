@@ -23,13 +23,13 @@ public int ClassifyUnitSize(list[int] lines) {
 	list[real] c = [0.0,0.0,0.0,0.0];
 	for (m <- lines) {
 		int risk = 0;
-		if (m > 15) {
+		if (m > 30) {
 			risk = 1;
 		} else
-		if (m > 30) {
+		if (m > 44) {
 			risk = 2;
 		} else
-		if (m > 60) {
+		if (m > 74) {
 			risk = 3;
 		}
 		c[risk] += 1.0;
