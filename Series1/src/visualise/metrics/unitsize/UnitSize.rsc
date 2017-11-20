@@ -33,7 +33,7 @@ public list[real] partitionUnitSize(list[int] rels) {
 		} else if (m >= 30) {
 			risk = 1;
 		}
-		c[risk] += 1.0;
+		c[risk] += m;
 	}
 	return c;
 }
