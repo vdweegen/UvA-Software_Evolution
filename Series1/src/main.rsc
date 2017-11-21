@@ -46,16 +46,18 @@ public void run() {
 	
 	map[str, int] codeVolume = volume(f);
 	int volumeClass = ClassifyVolume(codeVolume["source_lines"]);
-	println("\nVolume");
-	println("  Class         : <volumeClass>");
-	println("  Rank          : <ReportSigClass(volumeClass)>");
-	println("  Total lines   : <codeVolume["total_lines"]>");
-	println("  Source lines  : <codeVolume["source_lines"]>");
+	println("
+	'Volume
+	'  Class         : <volumeClass>
+	'  Rank          : <ReportSigClass(volumeClass)>
+	'  Total lines   : <codeVolume["total_lines"]>
+	'  Source lines  : <codeVolume["source_lines"]>");
 	
 	int unitComplexityClass = ClassifyComplexity(UnitComplexity(ast));
-	println("\nUnit Complexity");
-	println("  Class         : <unitComplexityClass>");
-	println("  Rank          : <ReportSigClass(unitComplexityClass)>");
+	println("
+	'Unit Complexity
+	'  Class         : <unitComplexityClass>
+	'  Rank          : <ReportSigClass(unitComplexityClass)>");
 	
 	list[real] c = partitionComplexity(UnitComplexity(ast));
 	real ctotal = sum(c);
@@ -63,9 +65,10 @@ public void run() {
 
 	
 	int unitSizeClass = ClassifyUnitSize(UnitSize(m));
-	println("\nUnit Size");
-	println("  Class         : <unitSizeClass>");
-	println("  Rank          : <ReportSigClass(unitSizeClass)>");
+	println("
+	'Unit Size
+	'  Class         : <unitSizeClass>
+	'  Rank          : <ReportSigClass(unitSizeClass)>");
 	
 	list[real] usp = partitionUnitSize(UnitSize(m));
 	real ustotal = sum(usp);
@@ -73,61 +76,73 @@ public void run() {
 	
 	real unitTestResult = UnitTest(ast);
 	int unitTestClass = ClassifyUnitTest(unitTestResult);
-	println("\nUnit Test quality");
-	println("  Class         : <unitTestClass>");
-	println("  Rank          : <ReportSigClass(unitTestClass)>");
-	println("  Avg. Percentage: <unitTestResult>");
+	
+	println("
+	'Unit Test quality
+	'  Class         : <unitTestClass>
+	'  Rank          : <ReportSigClass(unitTestClass)>
+	'  Avg. Percentage: <roundReport(unitTestResult)>");
 	
 	
 	int duplicateLines = Duplication(f);
 
 	int duplicationClass = ClassifyDuplication(duplicateLines, codeVolume["source_lines"]);
-	println("\nDuplication");
-	println("  Class         : <duplicationClass>");
-	println("  Rank          : <ReportSigClass(duplicationClass)>");
-	println("  Percentage    : <toReal(duplicateLines) / codeVolume["source_lines"] * 100>%");
-	println("  Duplicates    : <duplicateLines>\n");
+	println("
+	'Duplication
+	'  Class         : <duplicationClass>
+	'  Rank          : <ReportSigClass(duplicationClass)>
+	'  Percentage    : <roundReport(toReal(duplicateLines) / codeVolume["source_lines"] * 100)>%
+	'  Duplicates    : <duplicateLines>\n");
 
 
 	
-	println("\nSIG Maintainability Model");
+	println("
+	'SIG Maintainability Model");
 		
 	int analysabilityClass = ClassifyAnalysability(volumeClass, duplicationClass, unitSizeClass);
-	println("\nAnalysability");
-	println("  Class         : <analysabilityClass>");
-	println("  Rank          : <ReportSigClass(analysabilityClass)>");
-	println("  SIG Score     : <ReportSigScore(analysabilityClass)>");
+	println("
+	'Analysability
+	'  Class         : <analysabilityClass>
+	'  Rank          : <ReportSigClass(analysabilityClass)>
+	'  SIG Score     : <ReportSigScore(analysabilityClass)>");
 	
 	int changeabilityClass = ClassifyChangeability(unitComplexityClass, duplicationClass);
-	println("\nChangeability");
-	println("  Class         : <changeabilityClass>");
-	println("  Rank          : <ReportSigClass(changeabilityClass)>");
-	println("  SIG Score     : <ReportSigScore(changeabilityClass)>");
+	println("
+	'Changeability
+	'  Class         : <changeabilityClass>
+	'  Rank          : <ReportSigClass(changeabilityClass)>
+	'  SIG Score     : <ReportSigScore(changeabilityClass)>");
 	
 
 	int stabilityClass = ClassifyStability();
-	println("\nStability");
-	println("  Class         : <stabilityClass>");
-	println("  Rank          : <ReportSigClass(stabilityClass)>");
-	println("  SIG Score     : <ReportSigScore(stabilityClass)>");
+	println("
+	'Stability
+	'  Class         : <stabilityClass>
+	'  Rank          : <ReportSigClass(stabilityClass)>
+	'  SIG Score     : <ReportSigScore(stabilityClass)>");
 	
 
 	int testabilityClass = ClassifyTestability(unitComplexityClass, unitSizeClass, unitTestClass);
-	println("\nTestability");
-	println("  Class         : <testabilityClass>");
-	println("  Rank          : <ReportSigClass(testabilityClass)>");
-	println("  SIG Score     : <ReportSigScore(testabilityClass)>");
+	println(
+	"Testability
+	'  Class         : <testabilityClass>
+	'  Rank          : <ReportSigClass(testabilityClass)>
+	'  SIG Score     : <ReportSigScore(testabilityClass)>");
 	
 	int avgTotalScore = round((analysabilityClass + changeabilityClass + stabilityClass + testabilityClass)/4);
-	println("\nSIG Grade       : <ReportSigScore(avgTotalScore)>\n");
-	println("Time taken <((realTime() - startTime) / 1000)> seconds");
+	
+	println("
+	'SIG Grade       : <ReportSigScore(avgTotalScore)>\n
+	'Time taken <((realTime() - startTime) / 1000)> seconds");
 }
 
 
 str formatRisk(list[real] classes, real total) {
 	return "  Percentages
-	'    No risk     : <classes[0] / total * 100>%
-	'    Low risk    : <classes[1] / total * 100>%
-	'    Medium risk : <classes[2] / total * 100>%
-	'    High risk   : <classes[3] / total * 100>%";
+	'    No risk     : <roundReport(classes[0] / total * 100)>%
+	'    Low risk    : <roundReport(classes[1] / total * 100)>%
+	'    Medium risk : <roundReport(classes[2] / total * 100)>%
+	'    High risk   : <roundReport(classes[3] / total * 100)>%";
 }
+
+real roundReport(real i) = round(i, 0.01);
