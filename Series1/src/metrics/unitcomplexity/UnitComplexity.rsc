@@ -25,6 +25,19 @@ public lrel[int comp, int sloc] UnitComplexity(set[Declaration] ast){
 	return res;
 }
 
+public lrel[int comp, int sloc] UnitComplexity(Declaration ast){
+	lrel[int comp, int sloc] res = [];
+
+	visit (ast) {
+	case dec:\method(_, _, _, _, Statement impl):
+		res += <Complexity(dec), volume(impl.src)["source_lines"]>;
+	case dec:\constructor(_, _, _, Statement impl): 
+		res += <Complexity(dec), volume(impl.src)["source_lines"]>;
+	}
+
+	return res;
+}
+
 public int Complexity(Declaration method){
 	int c = 1;
 	
