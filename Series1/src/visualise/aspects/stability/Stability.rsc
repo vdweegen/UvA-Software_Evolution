@@ -11,10 +11,10 @@ import visualise::helpers::SigClass;
  *  to be JAVA, but leave room for future extension.
  */
  
-public str VisualiseStability(int unittestingClass = 0) {
+public str VisualiseStability(int unittestingClass) {
 	return ReportSigClass(ClassifyStability(unittestingClass));
 }
 
-public int ClassifyStability(int unittestingClass = 0) {
+public int ClassifyStability(int unittestingClass) {
 	return unittestingClass;
 }
