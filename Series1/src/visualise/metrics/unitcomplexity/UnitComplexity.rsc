@@ -38,29 +38,19 @@ public int ClassifyComplexity(lrel[int, int] rels) {
 	list[real] c = partitionComplexity(rels);
 	
 	real total = sum(c);
-	
-	
-	
+
 	int class;
+	class = -2;
 	
-	if ((c[3] > 0) || (c[2] > 0) || (c[1] > 25)) {
-		//println("1");
-		class = 1;
-	} else
-	if ((c[3] > 0) || (c[2] > 5) || (c[1] > 30)) {
-		//println("0");
-		class = 0;
-	} else
-	if ((c[3] > 0) || (c[2] > 10) || (c[1] > 40)) {
-		//println("-1");
-		class = -1;
-	} else
-	if ((c[3] > 5) || (c[2] > 15) || (c[1] > 50)) {
-		//println("-2");
-		class = -2;
-	} else {
-		//println("2");
-		class = 2;
-	}
+   	if (c[1] <= 25 && c[2] == 0 && c[3] == 0) {
+     	class = 2;
+    } else if (c[1] <= 30 && c[2] <= 5 && c[3] == 0) {
+    	class = 1;
+    } else if (c[1] <= 40 && c[2] <= 10 && c[3] == 0) {
+    	class = 0;
+    } else if (c[1] <= 50  && c[2] <= 15 && c[3] <= 5) {
+      	class = -1;
+    }
+
 	return class;
 }

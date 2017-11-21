@@ -17,5 +17,5 @@ public str VisualiseTestability(int unitcomplexityClass, int unitsizeClass, int 
 }
 
 public int ClassifyTestability(int unitcomplexityClass, int unitsizeClass, int unittestingClass) {
-	return round(unitcomplexityClass + unitsizeClass + unittestingClass) / 3;
+	return floor(unitcomplexityClass + unitsizeClass + unittestingClass) / 3;
 }

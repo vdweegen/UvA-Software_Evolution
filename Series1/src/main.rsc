@@ -59,11 +59,8 @@ public void run() {
 	
 	list[real] c = partitionComplexity(UnitComplexity(ast));
 	real ctotal = sum(c);
-	println("  Percentages");
-	println("    No risk     : <c[0] / ctotal * 100>%");
-	println("    Low risk    : <c[1] / ctotal * 100>%");
-	println("    Medium risk : <c[2] / ctotal * 100>%");
-	println("    High risk   : <c[3] / ctotal * 100>%");
+	println(formatRisk(c, ctotal));
+
 	
 	int unitSizeClass = ClassifyUnitSize(UnitSize(m));
 	println("\nUnit Size");
@@ -72,14 +69,7 @@ public void run() {
 	
 	list[real] usp = partitionUnitSize(UnitSize(m));
 	real ustotal = sum(usp);
-	println("  Percentages");
-	println("    No risk     : <usp[0] / ustotal * 100>%");
-	println("    Low risk    : <usp[1] / ustotal * 100>%");
-	println("    Medium risk : <usp[2] / ustotal * 100>%");
-	println("    High risk   : <usp[3] / ustotal * 100>%");
-	
-	
-	
+	println(formatRisk(usp, ustotal));
 	
 	real unitTestResult = UnitTest(ast);
 	int unitTestClass = ClassifyUnitTest(unitTestResult);
@@ -131,4 +121,13 @@ public void run() {
 	int avgTotalScore = round((analysabilityClass + changeabilityClass + stabilityClass + testabilityClass)/4);
 	println("\nSIG Grade       : <ReportSigScore(avgTotalScore)>\n");
 	println("Time taken <((realTime() - startTime) / 1000)> seconds");
+}
+
+
+str formatRisk(list[real] classes, real total) {
+	return "  Percentages
+	'    No risk     : <classes[0] / total * 100>%
+	'    Low risk    : <classes[1] / total * 100>%
+	'    Medium risk : <classes[2] / total * 100>%
+	'    High risk   : <classes[3] / total * 100>%";
 }
