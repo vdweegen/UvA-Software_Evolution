@@ -1,19 +1,20 @@
 module metrics::volume::Volume
 
-import helpers::Normalizer;
-import List;
-import String;
-import IO;
 import lang::java::m3::Core;
 import lang::java::m3::AST;
 import lang::java::jdt::m3::AST;
 import lang::java::jdt::m3::Core;
 
-/*
-	Volume takes the raw source;
-	
-*/
+import helpers::Normalizer;
 
+import List;
+import String;
+import IO;
+
+
+/*
+ * Volume takes the raw source;
+ */
 public map[str, int] volume(set[loc] project) {
 	list[map[str, int]] volumes = [volume(s) |  s  <- project];
 	
