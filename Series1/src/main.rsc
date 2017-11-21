@@ -5,6 +5,7 @@ import lang::java::jdt::m3::AST;
 import lang::java::jdt::m3::Core;
 
 import List;
+import helpers::Math;
 
 import visualise::helpers::SigClass;
 import util::Math;
@@ -14,6 +15,7 @@ import metrics::duplication::Duplication;
 import metrics::unitcomplexity::UnitComplexity;
 import metrics::unitsize::UnitSize;
 import metrics::unitsize::NOM;
+import metrics::unitsize::WMC;
 import metrics::unittest::UnitTest;
 import metrics::volume::Volume;
 
@@ -50,7 +52,15 @@ public void run() {
 		'NOM
 		'  Classes       : <size(nomValue)>
 		'  Methods       : <sum(nomValue)>
+		'  Max           : <max(nomValue)>
 		'  Average       : <(0 | it + x | x <-nomValue) / size(nomValue)>");
+		
+		list[int] wmcValue = WMC(classes(p));
+		println("
+		'WMC
+		'  Classes       : <size(wmcValue)>
+		'  Max           : <max(wmcValue)>
+		'  Average       : <avg(wmcValue)>");
 	}
 	
 	map[str, int] codeVolume = volume(f);
