@@ -14,6 +14,7 @@ import util::Benchmark;
 import metrics::duplication::Duplication;
 import metrics::unitcomplexity::UnitComplexity;
 import metrics::unitsize::UnitSize;
+import metrics::unitsize::NOM;
 import metrics::unittest::UnitTest;
 import metrics::volume::Volume;
 
@@ -35,7 +36,7 @@ import visualise::aspects::testability::Testability;
 //public loc largeProject = |project://hsqldb-2.3.1/src/|;
 public loc smallProject = |project://smallsql0.21_src|;
 public loc targetProject = smallProject;
-
+public bool extraMetrics = true;
 public void run() {
 	int startTime = realTime();
 	p = createM3FromEclipseProject(targetProject);
@@ -43,6 +44,18 @@ public void run() {
 	f = files(p);
 	m = methods(p);
 	
+	if (extraMetrics) {
+	
+	list[int] nomValue = NOM(classes(p));
+	println("
+	'NOM
+	'  Classes         : <size(nomValue)>
+	'  Methods         : <sum(nomValue)>
+	'  Average		   : <(0 | it + x | x <-nomValue) / size(nomValue)>");
+	
+
+	
+	}
 	
 	map[str, int] codeVolume = volume(f);
 	int volumeClass = ClassifyVolume(codeVolume["source_lines"]);
