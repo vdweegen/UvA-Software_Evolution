@@ -15,6 +15,6 @@ public str VisualiseStability(int unittestingClass = 0) {
 	return ReportSigClass(ClassifyStability(unittestingClass));
 }
 
-public int ClassifyStability(int unittestingClass = 0) {
+public int ClassifyStability(int unittestingClass) {
 	return unittestingClass;
 }

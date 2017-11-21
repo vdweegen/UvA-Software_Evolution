@@ -1,34 +1,25 @@
 module metrics::duplication::Duplication
 
+import lang::java::jdt::m3::AST;
+import lang::java::jdt::m3::Core;
+import util::Math;
+import util::Benchmark;
+
 import helpers::Normalizer;
 import metrics::volume::Volume;
+
 import List;
 import String;
 import IO;
 import Set;
 import ListRelation;
-import util::Math;
 import ListRelation;
 import Map;
-import util::Benchmark;
-import lang::java::jdt::m3::AST;
-import lang::java::jdt::m3::Core;
-
-//public loc file = |project://smallsql0.21_src/src/smallsql/database/Column.java|;
-//public loc proj = |project://hsqldb-2.3.1/src/src|;
-//public loc proj = |project://smallsql0.21_src|;
-//public loc proj = |project://TestProject|;
-
-//public M3 model = createM3FromEclipseProject(proj);
-//public M3 modelFile = createM3FromFile(file);
-//public set[loc] sources = files(model);
-//public str source = readFile(file);
 
 /*
-	Sliding window mehtod
-	Calculate 
-*/
-
+ * Sliding window method
+ * 	Calculate 
+ */
 public list[list[&T]] chunk(list[&T] target, int chunk) {
 	return chunk > size(target) ? [target] : [target[(x*chunk).. ((x*chunk)+chunk)] | int x <- [0 .. ceil(size(target) / chunk)]];
 }

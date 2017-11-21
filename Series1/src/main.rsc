@@ -10,7 +10,6 @@ import visualise::helpers::SigClass;
 import util::Math;
 import util::Benchmark;
 
-// REORGANISE IMPORTS BEFORE DELIVERY!!!
 import metrics::duplication::Duplication;
 import metrics::unitcomplexity::UnitComplexity;
 import metrics::unitsize::UnitSize;
@@ -33,6 +32,7 @@ import visualise::aspects::analysability::Analysability;
 import visualise::aspects::changeability::Changeability;
 import visualise::aspects::stability::Stability;
 import visualise::aspects::testability::Testability;
+
 //public loc largeProject = |project://hsqldb-2.3.1/src/|;
 public loc smallProject = |project://smallsql0.21_src|;
 public loc targetProject = smallProject;
@@ -45,16 +45,12 @@ public void run() {
 	m = methods(p);
 	
 	if (extraMetrics) {
-	
-	list[int] nomValue = NOM(classes(p));
-	println("
-	'NOM
-	'  Classes         : <size(nomValue)>
-	'  Methods         : <sum(nomValue)>
-	'  Average		   : <(0 | it + x | x <-nomValue) / size(nomValue)>");
-	
-
-	
+		list[int] nomValue = NOM(classes(p));
+		println("
+		'NOM
+		'  Classes       : <size(nomValue)>
+		'  Methods       : <sum(nomValue)>
+		'  Average       : <(0 | it + x | x <-nomValue) / size(nomValue)>");
 	}
 	
 	map[str, int] codeVolume = volume(f);
@@ -112,7 +108,7 @@ public void run() {
 	println("
 	'SIG Maintainability Model");
 		
-	int analysabilityClass = ClassifyAnalysability(volumeClass, duplicationClass, unitSizeClass);
+	int analysabilityClass = ClassifyAnalysability(volumeClass, duplicationClass, unitSizeClass, unitTestClass);
 	println("
 	'Analysability
 	'  Class         : <analysabilityClass>
@@ -127,7 +123,7 @@ public void run() {
 	'  SIG Score     : <ReportSigScore(changeabilityClass)>");
 	
 
-	int stabilityClass = ClassifyStability();
+	int stabilityClass = ClassifyStability(unitTestClass);
 	println("
 	'Stability
 	'  Class         : <stabilityClass>
@@ -136,8 +132,8 @@ public void run() {
 	
 
 	int testabilityClass = ClassifyTestability(unitComplexityClass, unitSizeClass, unitTestClass);
-	println(
-	"Testability
+	println("
+	'Testability
 	'  Class         : <testabilityClass>
 	'  Rank          : <ReportSigClass(testabilityClass)>
 	'  SIG Score     : <ReportSigScore(testabilityClass)>");

@@ -18,6 +18,6 @@ public str VisualiseAnalysability(int volumeClass, int duplicationClass, int uni
 }
 
 public int ClassifyAnalysability(int volumeClass, int duplicationClass,
-	int unitsizeClass, int unittestingClass = 0) {
+	int unitsizeClass, int unittestingClass) {
 	return round(volumeClass + duplicationClass + unitsizeClass + unittestingClass) / 4;
 }
