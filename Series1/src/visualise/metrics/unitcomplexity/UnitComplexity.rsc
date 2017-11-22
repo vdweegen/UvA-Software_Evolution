@@ -38,17 +38,23 @@ public int ClassifyComplexity(lrel[int, int] rels) {
 	list[real] c = partitionComplexity(rels);
 	
 	real total = sum(c);
+	real norisk = c[0] * 100 / total;
+	real lowrisk = c[1] * 100 / total;
+	real mediumrisk = c[2] * 100 / total;
+	real highrisk = c[3] * 100 / total;
 
-	int class;
-	class = -2;
+	int class = -2;
 	
-   	if (c[1] <= 25 && c[2] == 0 && c[3] == 0) {
+   	if (lowrisk <= 25.0 && mediumrisk == 0.0 && highrisk == 0.0) {
      	class = 2;
-    } else if (c[1] <= 30 && c[2] <= 5 && c[3] == 0) {
+    } else 
+    if (lowrisk <= 30.0 && mediumrisk <= 5.0 && highrisk == 0.0) {
     	class = 1;
-    } else if (c[1] <= 40 && c[2] <= 10 && c[3] == 0) {
+    } else 
+    if (lowrisk <= 40.0 && mediumrisk <= 10.0 && highrisk == 0.0) {
     	class = 0;
-    } else if (c[1] <= 50  && c[2] <= 15 && c[3] <= 5) {
+    } else 
+    if (lowrisk <= 50.0  && mediumrisk <= 15.0 && highrisk <= 5.0) {
       	class = -1;
     }
 
