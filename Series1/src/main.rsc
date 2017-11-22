@@ -5,6 +5,7 @@ import lang::java::jdt::m3::AST;
 import lang::java::jdt::m3::Core;
 
 import List;
+import ListRelation;
 import helpers::Math;
 
 import visualise::helpers::SigClass;
@@ -32,8 +33,9 @@ import visualise::aspects::testability::Testability;
 
 public loc largeProject = |project://hsqldb-2.3.1|;
 public loc smallProject = |project://smallsql0.21_src|;
-public loc targetProject = largeProject;
+public loc targetProject = smallProject;
 public bool extraMetrics = true;
+
 public void run() {
 	int startTime = realTime();
 	p = createM3FromEclipseProject(targetProject);
@@ -48,6 +50,7 @@ public void run() {
 		'  Classes       : <size(nomValue)>
 		'  Methods       : <sum(nomValue)>
 		'  Max           : <max(nomValue)>
+		'  Min           : <min(nomValue)>
 		'  Average       : <(0 | it + x | x <-nomValue) / size(nomValue)>");
 		
 		list[int] wmcValue = WMC(classes(p));
@@ -55,6 +58,7 @@ public void run() {
 		'WMC
 		'  Classes       : <size(wmcValue)>
 		'  Max           : <max(wmcValue)>
+		'  Min           : <min(wmcValue)>
 		'  Average       : <avg(wmcValue)>");
 	}
 	
@@ -67,10 +71,15 @@ public void run() {
 	'  Total lines   : <codeVolume["total_lines"]>
 	'  Source lines  : <codeVolume["source_lines"]>");
 	
-	int unitComplexityClass = ClassifyComplexity(UnitComplexity(ast));
+	lrel[int comp, int sloc] uc = UnitComplexity(ast);
+	ucDomain = domain(uc);
+	int unitComplexityClass = ClassifyComplexity(uc);
+	
 	println("
 	'Unit Complexity
 	'  Class         : <unitComplexityClass>
+	'  Max           : <max(ucDomain)>
+	'  Min           : <min(ucDomain)>
 	'  Rank          : <ReportSigClass(unitComplexityClass)>");
 	
 	list[real] c = partitionComplexity(UnitComplexity(ast));
