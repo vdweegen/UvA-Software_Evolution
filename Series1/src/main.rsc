@@ -19,11 +19,6 @@ import metrics::unitsize::WMC;
 import metrics::unittest::UnitTest;
 import metrics::volume::Volume;
 
-import aspects::analysability::Analysability;
-import aspects::changeability::Changeability;
-import aspects::stability::Stability;
-import aspects::testability::Testability;
-
 import visualise::metrics::volume::Volume;
 import visualise::metrics::unitsize::UnitSize;
 import visualise::metrics::unitcomplexity::UnitComplexity;
