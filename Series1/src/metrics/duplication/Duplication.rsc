@@ -58,13 +58,13 @@ public lrel [str block, int idx, str line] optimizedIndex(map[str, int] candidat
 	list[str] current = take(window, subject);
 	lrel[str block, int idx, str line] result = [];
 	int incr = 0;
-	
+	int fileLineIdx = fileIndex * 10000;
 	while(size(current) == window ) {
 		incr+=1;
 		if (any(str n <- current, n in candidates)) {
 			str h = (intercalate("\n",current));
 			
-			int fileLineIdx = fileIndex * 10000;
+		
 			for(i <- [0.. window]) {
 				str line = current[i];
 				result = push(<h, fileLineIdx+(incr+i),  line>, result);

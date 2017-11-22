@@ -113,5 +113,4 @@ test bool duplication3() = testWithString(example2) == 12;
 test bool duplication4() = testWithString(example3) == 33;
 
 
-
 public int testWithString(str source) = Duplication(normalize(split("\n", source)));
