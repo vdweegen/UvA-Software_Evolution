@@ -17,5 +17,5 @@ public str VisualiseChangeability(int unitcomplexityClass, int duplicationClass)
 }
 
 public int ClassifyChangeability(int unitcomplexityClass, int duplicationClass) {
-	return round(unitcomplexityClass + duplicationClass) / 2;
+	return floor(unitcomplexityClass + duplicationClass) / 2;
 }
