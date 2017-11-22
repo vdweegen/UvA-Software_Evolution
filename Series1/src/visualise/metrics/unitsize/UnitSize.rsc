@@ -48,13 +48,13 @@ public int ClassifyUnitSize(list[int] lines) {
 	// Percentages based on v9 of the SIG-TUViT paper
 	if (c[3] > 0) {
 		class -= 1;
-	} else
+	} 
 	if (c[3] / total * 100 > 7.0) {
 		class -= 1;
-	} else
+	} 
 	if (c[2] / total * 100 > 21.4) {
 		class -= 1;
-	} else
+	} 
 	if (c[1] / total * 100 > 44.4) {
 		class -= 1;
 	} 
