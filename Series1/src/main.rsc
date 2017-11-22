@@ -69,7 +69,9 @@ public void run() {
 	'  Class         : <volumeClass>
 	'  Rank          : <ReportSigClass(volumeClass)>
 	'  Total lines   : <codeVolume["total_lines"]>
-	'  Source lines  : <codeVolume["source_lines"]>");
+	'  Source lines  : <codeVolume["source_lines"]>
+	'  Comments      : <codeVolume["comments"]>
+	'  Comment lines : <codeVolume["comment_lines"]>");
 	
 	lrel[int comp, int sloc] uc = UnitComplexity(ast);
 	ucDomain = domain(uc);
