@@ -1,4 +1,4 @@
-module \test::helpers::Normalizer
+module \tests::helpers::Normalizer
 
 import helpers::Normalizer;
 

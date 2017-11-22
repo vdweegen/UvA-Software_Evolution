@@ -42,6 +42,17 @@ public int Duplication(set[loc] filelist) {
 	return(size(dup(newDup)));
 }
 
+
+public int Duplication(list[str] source) {
+	window = 6;
+	lrel[str block, int idx, str line] hashIndex = optimizedIndex(distribution(source), source, 6, 1);
+	candidateBlocks = domain( rangeX ( distribution (hashIndex.block),{window}));
+	
+	lrel[int, str] newDup = ([] | it + hashIndex[{x}]| x <- candidateBlocks);
+	return size(dup(newDup));
+}
+
+
 public lrel [str block, int idx, str line] optimizedIndex(map[str, int] candidates,list[str] subject, int window, int fileIndex) {
 	list[str] body = subject;
 	list[str] current = take(window, subject);
