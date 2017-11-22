@@ -30,9 +30,9 @@ import visualise::aspects::changeability::Changeability;
 import visualise::aspects::stability::Stability;
 import visualise::aspects::testability::Testability;
 
-//public loc largeProject = |project://hsqldb-2.3.1/src/|;
+public loc largeProject = |project://hsqldb-2.3.1|;
 public loc smallProject = |project://smallsql0.21_src|;
-public loc targetProject = smallProject;
+public loc targetProject = largeProject;
 public bool extraMetrics = true;
 public void run() {
 	int startTime = realTime();
