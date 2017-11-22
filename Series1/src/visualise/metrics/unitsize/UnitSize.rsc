@@ -45,17 +45,17 @@ public int ClassifyUnitSize(list[int] lines) {
 	real total = sum(c);
 	int class = 2;
 	
-
+	// Percentages based on v9 of the SIG-TUViT paper
 	if (c[3] > 0) {
 		class -= 1;
 	} else
-	if (c[3] / total * 100 > 5.8) {
+	if (c[3] / total * 100 > 7.0) {
 		class -= 1;
 	} else
-	if (c[2] / total * 100 > 20.3) {
+	if (c[2] / total * 100 > 21.4) {
 		class -= 1;
 	} else
-	if (c[1] / total * 100 > 42.8) {
+	if (c[1] / total * 100 > 44.4) {
 		class -= 1;
 	} 
 	
