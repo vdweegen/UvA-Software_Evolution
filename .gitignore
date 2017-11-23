@@ -23,3 +23,6 @@ hs_err_pid*
 
 # Eclipse stuff
 bin/
+
+# Don't ignore the Assignment
+!Series1_10017577_10807411.zip
