@@ -73,8 +73,8 @@ public int Duplication(list[str] source) {
 			
 			append result;
 	}
-	
-	return(size(dup(flatten(hashIndex2))));;
+	int res = (size({*x|x <- hashIndex2}));
+	return res;
 }
 
 
