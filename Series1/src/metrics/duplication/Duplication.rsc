@@ -36,7 +36,7 @@ public int Duplication(set[loc] filelist) {
 	
 	lrel[str block, int idx, str line] hashIndex = ([] | it + optimizedIndex(candidateLines, lines[x-1], window, x) | x <- [1..size(sourcesList)+1]);
 	candidateBlocks = domain( rangeX ( distribution (hashIndex.block),{window}));
-	
+	//println(candidateBlocks);
 	lrel[int, str] newDup = ([] | it + hashIndex[{x}]| x <- candidateBlocks);
 	
 	return(size(dup(newDup)));

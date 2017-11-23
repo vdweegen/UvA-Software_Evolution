@@ -12,7 +12,7 @@ import visualise::helpers::SigClass;
 import util::Math;
 import util::Benchmark;
 
-import metrics::duplication::Duplication;
+import metrics::duplication::DuplicationFast;
 import metrics::unitcomplexity::UnitComplexity;
 import metrics::unitsize::UnitSize;
 import metrics::unitsize::NOM;
@@ -33,18 +33,21 @@ import visualise::aspects::testability::Testability;
 
 public loc largeProject = |project://hsqldb-2.3.1|;
 public loc smallProject = |project://smallsql0.21_src|;
-public loc targetProject = smallProject;
-public bool extraMetrics = true;
-
+public loc targetProject = largeProject;
+public bool extraMetrics = false;
 public void run() {
+	run(smallProject);
+}
+public void run(loc t) {
 	int startTime = realTime();
-	p = createM3FromEclipseProject(targetProject);
-	ast = createAstsFromEclipseProject(targetProject, false);
+	p = createM3FromEclipseProject(t);
+	ast = createAstsFromEclipseProject(t, false);
 	f = files(p);
 	m = methods(p);
-	
+	cls = classes(p);
+
 	if (extraMetrics) {
-		list[int] nomValue = NOM(classes(p));
+		list[int] nomValue = NOM(cls);
 		println("
 		'NOM
 		'  Classes       : <size(nomValue)>
@@ -53,7 +56,7 @@ public void run() {
 		'  Min           : <min(nomValue)>
 		'  Average       : <(0 | it + x | x <-nomValue) / size(nomValue)>");
 		
-		list[int] wmcValue = WMC(classes(p));
+		list[int] wmcValue = WMC(cls);
 		println("
 		'WMC
 		'  Classes       : <size(wmcValue)>
