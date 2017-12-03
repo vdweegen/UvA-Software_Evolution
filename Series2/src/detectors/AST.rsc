@@ -6,28 +6,39 @@ import lang::java::\syntax::Java15;
 import Node;
 import String;
 import List;
+import util::Math;
 
-public list[node] hash(Declaration d) {
-	list[node] subtrees = [];
-	list[int] counts = [];
-	
+public int THRESHOLD = 30;
+anno int node @ hash;
+anno int node @ mass;
+anno int node @ bucket;
+
+public int treeMass(node n) {
+	return countNodes(n);
+}
+
+public void run(node d) {
+	numberOfSubTrees = treeMass(d);
+	buckets = ceil(numberOfSubTrees / 10);
+	println("Number of buckets <buckets>");
+}
+
+public list[node] subTrees(Declaration d, int threshold) {
+	list[node] subtrees = [];	
 	visit(d) {
-		//case Type x : println("Found: <x>");
 		case node n:  {
 			 s = unsetRec(n);
-			 mass = countNodes(s);
-			 
+			 mass = treeMass(s);
 			 s = s[@mass = mass];
-			 if (mass >= 30) {
-			 	counts += mass;
+			 z= s[@hash = hashing(s)];
+			 s= z[@bucket = (z@hash % 18)];
+			 if (mass >= threshold) {
 			 	subtrees += s;
 			 }
 			 
 		}
 	}
 
-	//println(subtrees);
-	//println(counts);
 	 for(x <- subtrees) {
 		 println(hashing(x));
 	 }
