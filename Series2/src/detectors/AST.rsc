@@ -12,6 +12,15 @@ public int THRESHOLD = 30;
 anno int node @ hash;
 anno int node @ mass;
 anno int node @ bucket;
+anno int node @ src;
+
+/*
+
+	Annotate AST
+
+
+*/
+
 
 public int treeMass(node n) {
 	return countNodes(n);
@@ -23,25 +32,45 @@ public void run(node d) {
 	println("Number of buckets <buckets>");
 }
 
+
+public lrel[int, node] bucketfy(list[node] s) {
+	lrel[int, node] buckets = [];
+	
+	buckets = for(n <- s) {
+		append(<n@hash, n>);
+	}
+
+	return buckets;
+}
+
+
+
+
 public list[node] subTrees(Declaration d, int threshold) {
 	list[node] subtrees = [];	
 	visit(d) {
 		case node n:  {
 			 s = unsetRec(n);
 			 mass = treeMass(s);
-			 s = s[@mass = mass];
-			 z= s[@hash = hashing(s)];
-			 s= z[@bucket = (z@hash % 18)];
+			 hashValue = hash(s);
+
+			 
 			 if (mass >= threshold) {
+			 	 src = n.src;
+			 	 s = setAnnotations(s, (
+			 	"mass": mass,
+			 	"hash": hashValue,
+			 	"src": src
+			 	//,
+			 	//"bucket": hashValue % 3 
+				 ));
 			 	subtrees += s;
+			 
 			 }
 			 
 		}
 	}
 
-	 for(x <- subtrees) {
-		 println(hashing(x));
-	 }
 	return subtrees;
 }
 
@@ -54,14 +83,10 @@ public void nameThatNode(node n) {
 
 }
 
-
-
-
-
 public int countNodes(node d) {
 	count = 1;
 	top-down visit(d) {
-		//case Type x : println("Found: <x>");
+
 		case node n:  {
 			 count += 1;
 		}
@@ -71,7 +96,7 @@ public int countNodes(node d) {
 	
 }
 
-public int hashing (node d) {
+public int hash (node d) {
 	list[int] h = [];
 	
 	visit(d) {
