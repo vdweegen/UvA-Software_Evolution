@@ -32,10 +32,13 @@ class Handler(Thread):
             self.addText(obj.src_path)
 
 class Interface(object):
-    def NewFile(self):
+    def Treemap(self):
         pass
 
-    def OpenFile(self):
+    def Scatter(self):
+        pass
+
+    def HDG(self):
         pass
 
     def About(self):
@@ -48,16 +51,25 @@ class Interface(object):
         self.root.minsize(width=700, height=700)
         self.root.maxsize(width=700, height=700)
         self.root.config(menu=self.menu)
+
+        # Filemenu
         self.filemenu = Menu(self.menu)
-        self.menu.add_cascade(label="File", menu=self.filemenu)
-        self.filemenu.add_command(label="New", command=self.NewFile)
-        self.filemenu.add_command(label="Open...", command=self.OpenFile)
-        self.filemenu.add_separator()
         self.filemenu.add_command(label="Exit", command=self.root.quit)
 
+        # Visualizationmenu
+        self.visualizationmenu = Menu(self.menu)
+        self.visualizationmenu.add_command(label="Treemap", command=self.Treemap)
+        self.visualizationmenu.add_command(label="Scatterplot", command=self.Scatter)
+        self.visualizationmenu.add_command(label="Hierarchical Dependecy Graphy", command=self.HDG)
+
+        # Helpmenu
         self.helpmenu = Menu(self.menu)
-        self.menu.add_cascade(label="Help", menu=self.helpmenu)
         self.helpmenu.add_command(label="About...", command=self.About)
+
+        # Root
+        self.menu.add_cascade(label="File", menu=self.filemenu)
+        self.menu.add_cascade(label="View", menu=self.visualizationmenu)
+        self.menu.add_cascade(label="Help", menu=self.helpmenu)
 
     def run(self):
         self.root.mainloop()
