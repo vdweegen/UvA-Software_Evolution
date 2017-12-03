@@ -14,14 +14,25 @@ public void hello() {
 	println("Hello Rascal <littleClass>");
 }
 
+
+public Figure visAST(compilationUnit(_, list[Declaration] d)) = 
+	visNode(d) ;            
+
 public Figure visAST(Declaration name) = 
 	box(text("<name>"), gap(2), fillColor("lightyellow")); 
 	
-public Figure visAST(\method(Type \return, str name, list[Declaration] parameters, list[Expression] exceptions, Statement impl)) = 
+public Figure visAST(Statement name) = 
 	box(text("<name>"), gap(2), fillColor("lightyellow")); 
+
+public Figure visAST(list[Declaration] parameters) = 
+	tree(ellipse(fillColor("blue")), [visAST(x) |x <-  parameters]);
 	
-public Figure visAST(compilationUnit(_, list[Declaration] d)) = 
-	visNode(d) ;               
+		
+public Figure visAST(\method(Type \return, str name, list[Declaration] parameters, list[Expression] exceptions, Statement impl)) = visNode(name, parameters, impl);
+
+	//box(text("<name>"), gap(2), fillColor("lightyellow")); 
+	
+   
 
 
 // Nodes of less importance are just shown as names or types
@@ -31,7 +42,9 @@ public Figure visAST(class(str name, list[Type] extends, list[Type] implements, 
 	  
 public Figure visNode(list[Declaration] declarations) = tree(ellipse(fillColor("green")), [visAST(x) | x <- declarations]);
 public Figure visNode(str name, list[Declaration] body) = tree(ellipse(text("<name>"),fillColor("red")), [visAST(x) | x <- body]);
-	
+
+public Figure visNode(str name, list[Declaration] parameters, Statement impl) = tree(ellipse(text("<name>"),fillColor("red")), [tree(ellipse(text("Parameters"),fillColor("blue")), [visAST(parameters)]), tree(ellipse(text("Body"),fillColor("yellow")), [visAST(impl)])]);
+
 public Figure visNode(str name) =     
 	tree(ellipse(fillColor(name)), []);
 
