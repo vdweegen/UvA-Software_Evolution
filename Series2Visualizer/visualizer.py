@@ -24,6 +24,37 @@ class Handler(Thread):
             obj = self.q.get()
             print(obj)
 
+class Interface(object):
+    def NewFile(self):
+        pass
+
+    def OpenFile(self):
+        pass
+
+    def About(self):
+        pass
+
+    def __init__(self):
+        Thread.__init__(self)
+        self.root = Tk()
+        self.menu = Menu(self.root)
+        self.root.minsize(width=700, height=700)
+        self.root.maxsize(width=700, height=700)
+        self.root.config(menu=self.menu)
+        self.filemenu = Menu(self.menu)
+        self.menu.add_cascade(label="File", menu=self.filemenu)
+        self.filemenu.add_command(label="New", command=self.NewFile)
+        self.filemenu.add_command(label="Open...", command=self.OpenFile)
+        self.filemenu.add_separator()
+        self.filemenu.add_command(label="Exit", command=self.root.quit)
+
+        self.helpmenu = Menu(self.menu)
+        self.menu.add_cascade(label="Help", menu=self.helpmenu)
+        self.helpmenu.add_command(label="About...", command=self.About)
+
+    def run(self):
+        self.root.mainloop()
+
 if __name__ == "__main__":
     try:
         queue = multiprocessing.Queue()
@@ -33,6 +64,9 @@ if __name__ == "__main__":
         h = Handler(queue)
         h.start()
 
+        i = Interface()
+        i.run()
+
         fm.join()
         h.join()
     except KeyboardInterrupt:
@@ -40,31 +74,3 @@ if __name__ == "__main__":
     finally:
         fm.join()
         h.join()
-
-# def NewFile():
-#     print("New File!")
-#
-# def OpenFile():
-#     name = filedialog()
-#     print(name)
-#
-# def About():
-#     print("This is a simple example of a menu")
-#
-# root = Tk()
-# menu = Menu(root)
-# root.minsize(width=700, height=700)
-# root.maxsize(width=700, height=700)
-# root.config(menu=menu)
-# filemenu = Menu(menu)
-# menu.add_cascade(label="File", menu=filemenu)
-# filemenu.add_command(label="New", command=NewFile)
-# filemenu.add_command(label="Open...", command=OpenFile)
-# filemenu.add_separator()
-# filemenu.add_command(label="Exit", command=root.quit)
-#
-# helpmenu = Menu(menu)
-# menu.add_cascade(label="Help", menu=helpmenu)
-# helpmenu.add_command(label="About...", command=About)
-#
-# mainloop()
