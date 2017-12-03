@@ -15,14 +15,21 @@ class Monitoring(Thread):
         self.monitor.kill()
 
 class Handler(Thread):
-    def __init__(self, q):
+    def __init__(self, q, i):
         Thread.__init__(self)
+        self.i = i
         self.q = q
+
+    def addText(self, t):
+        T = Text(self.i.root, height=2, width=30)
+        T.pack()
+        T.insert(END, "Got: {}".format(t))
 
     def run(self):
         while True:
             obj = self.q.get()
-            print(obj)
+            # TODO: Handle different actions here
+            self.addText(obj.src_path)
 
 class Interface(object):
     def NewFile(self):
@@ -61,10 +68,11 @@ if __name__ == "__main__":
         fm = Monitoring(queue)
         fm.start()
 
-        h = Handler(queue)
+        i = Interface()
+
+        h = Handler(queue, i)
         h.start()
 
-        i = Interface()
         i.run()
 
         fm.join()
