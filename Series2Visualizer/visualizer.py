@@ -1,6 +1,7 @@
 from tkinter import *
 from filemonitor import Monitor
 from threading import Thread
+from pychart.draw import PyChart
 import multiprocessing
 
 class Monitoring(Thread):
@@ -21,15 +22,24 @@ class Handler(Thread):
         self.q = q
 
     def addText(self, t):
-        T = Text(self.i.root, height=2, width=30)
+        T = Text(self.i.frame, height=2, width=30)
         T.pack()
         T.insert(END, "Got: {}".format(t))
+
+    def draw(self):
+        for widget in self.i.frame.winfo_children():
+            widget.destroy()
+        t = PyChart()
+        t.vals(None) # TODO: Add Percentages
+        t.draw(self.i.frame)
 
     def run(self):
         while True:
             obj = self.q.get()
             # TODO: Handle different actions here
-            self.addText(obj.src_path)
+            # self.addText(obj.src_path)
+            self.draw()
+
 
 class Interface(object):
     def Treemap(self):
@@ -70,6 +80,9 @@ class Interface(object):
         self.menu.add_cascade(label="File", menu=self.filemenu)
         self.menu.add_cascade(label="View", menu=self.visualizationmenu)
         self.menu.add_cascade(label="Help", menu=self.helpmenu)
+
+        self.frame = Frame(self.root)
+        self.frame.pack()
 
     def run(self):
         self.root.mainloop()
