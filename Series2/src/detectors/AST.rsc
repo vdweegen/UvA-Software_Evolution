@@ -3,16 +3,20 @@ module detectors::AST
 import IO;
 import lang::java::jdt::m3::AST;
 import lang::java::\syntax::Java15;
+import lang::java::m3::AST;
+import lang::java::jdt::m3::AST;
 import Node;
 import String;
 import List;
 import util::Math;
+import Map;
+import ListRelation;
 
 public int THRESHOLD = 30;
 anno int node @ hash;
 anno int node @ mass;
 anno int node @ bucket;
-anno int node @ src;
+anno loc node @ src;
 
 /*
 
@@ -25,11 +29,56 @@ anno int node @ src;
 public int treeMass(node n) {
 	return countNodes(n);
 }
-
 public void run(node d) {
-	numberOfSubTrees = treeMass(d);
-	buckets = ceil(numberOfSubTrees / 10);
-	println("Number of buckets <buckets>");
+}
+public void run(set[node] ds) {
+
+	candidates = ([] | it + subTrees(d, 30) |d <- ds);
+	
+	hashEntries = [ h@hash | h <- candidates];
+	byHash = bucketfy(candidates);
+	potentials = domain(rangeX(distribution(hashEntries), {1}));
+	clones = [];
+	for(x <- potentials) {
+		p = byHash[{x}];
+		//println(p);
+		
+		while (size(p) > 0) {
+			tuple[node, list[node]] ht = headTail(p);
+			node n = ht[0];
+			for([*_,z:n,*_] := ht[1]) {
+				println("Match <z@src> <n@src>");
+				clones += <n@src, z@src>;
+			}
+			p = ht[1];
+		}
+		
+		
+	}
+	
+	indexClones = (index(clones));
+	
+	for(cl <- indexClones) {
+		println("
+		' Clone class
+		' Original @ <cl>
+		'<readFile(cl)>
+		' <for(x <- indexClones[cl]){> 
+		' Clone @ <x>
+		'<readFile(x)>
+		' <}>
+		");
+	}
+	
+	println("Number of potential <dup(clones)> ");
+	
+}
+
+public bool compareCloneBasic(node s1, node s2) {
+
+	
+
+	return false;
 }
 
 
@@ -46,8 +95,9 @@ public lrel[int, node] bucketfy(list[node] s) {
 
 
 
-public list[node] subTrees(Declaration d, int threshold) {
+public list[node] subTrees(node d, int threshold) {
 	list[node] subtrees = [];	
+	println("Proccessing file...<d.src>");
 	visit(d) {
 		case node n:  {
 			 s = unsetRec(n);
@@ -55,7 +105,8 @@ public list[node] subTrees(Declaration d, int threshold) {
 			 hashValue = hash(s);
 
 			 
-			 if (mass >= threshold) {
+			 if (mass >= threshold && n.src?) {
+				 println("Found subtree");
 			 	 src = n.src;
 			 	 s = setAnnotations(s, (
 			 	"mass": mass,
@@ -70,6 +121,7 @@ public list[node] subTrees(Declaration d, int threshold) {
 			 
 		}
 	}
+	println("Done proccessing file...");
 
 	return subtrees;
 }
@@ -96,12 +148,13 @@ public int countNodes(node d) {
 	
 }
 
+@memo
 public int hash (node d) {
 	list[int] h = [];
 	
 	visit(d) {
 		case node n: {
-			h += chars(getName(n));
+			h += chars(getName(n)[0..3]);
 		}
 	}
 	

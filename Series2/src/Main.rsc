@@ -4,11 +4,13 @@ import IO;
 import vis::Figure;
 import vis::Render;
 import lang::java::m3::AST;
+import lang::java::jdt::m3::AST;
 import lang::java::\syntax::Java15;
 
 public loc littleClass = |project://TestProject/src/Small.java|;
+public loc smallProject = |project://smallsql0.21_src|;
 public Declaration littleClassAst = createAstFromFile(littleClass, false);
-
+public set[node] smast = createAstsFromEclipseProject(smallProject, false);
 
 public void hello() {
 	println("Hello Rascal <littleClass>");
