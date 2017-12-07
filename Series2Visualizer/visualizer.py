@@ -2,6 +2,7 @@ from tkinter import *
 from filemonitor import Monitor
 from threading import Thread
 from pychart.draw import PyChart
+from treemap.draw import TreeMap
 import multiprocessing
 
 class Monitoring(Thread):
@@ -30,6 +31,7 @@ class Handler(Thread):
         for widget in self.i.frame.winfo_children():
             widget.destroy()
         t = PyChart()
+        # t = TreeMap()
         t.vals(None) # TODO: Add Percentages
         t.draw(self.i.frame)
 
