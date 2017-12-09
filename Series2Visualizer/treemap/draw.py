@@ -2,8 +2,13 @@ from tkinter import *
 from random import randint
 import squarify
 
-# these values define the coordinate system for the returned rectangles
-# the values will range from x to x + width and y to y + height
+
+#TODO: Build map between the clones and the rectables
+#   1. Since the dicts are sorted we can use the index to
+#   create a mapping based on the indexes.
+#   2. Create a custom Canvas object for the squares with
+#   an overloaded mouseover to open a window with the clone/class
+#   information
 class TreeMap:
     def vals(self, project):
         self.values = [project.get_sloc()]
