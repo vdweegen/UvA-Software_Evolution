@@ -5,6 +5,7 @@ from pychart.draw import PyChart
 from treemap.draw import TreeMap
 import multiprocessing
 
+
 class Monitoring(Thread):
     def __init__(self, q):
         Thread.__init__(self)
@@ -15,6 +16,7 @@ class Monitoring(Thread):
 
     def kill(self):
         self.monitor.kill()
+
 
 class Handler(Thread):
     def __init__(self, q, i):
@@ -42,7 +44,7 @@ class Handler(Thread):
         else:
             t = TreeMap()
 
-        t.vals(None) # TODO: Add Percentages
+        t.vals(None)  # TODO: Add Percentages
         t.draw(self.i.frame)
 
     def run(self):
@@ -54,7 +56,7 @@ class Handler(Thread):
 
 
 class Interface(object):
-    type = "treemap" # Default is treemap
+    type = "treemap"  # Default is treemap
 
     def setType(self, type):
         self.type = type
@@ -99,6 +101,7 @@ class Interface(object):
 
     def run(self):
         self.root.mainloop()
+
 
 if __name__ == "__main__":
     try:
