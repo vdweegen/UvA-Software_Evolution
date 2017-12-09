@@ -18,7 +18,9 @@ class TreeMap:
         self.width = 700
         self.height = 700
 
-        self.values = squarify.normalize_sizes(
+        self.values.sort(reverse=False)
+
+        self.values_normalized = squarify.normalize_sizes(
             self.values,
             self.width,
             self.height
@@ -33,7 +35,7 @@ class TreeMap:
 
         # padded rectangles will probably visualize better for certain cases
         self.padded_rects = squarify.padded_squarify(
-            self.values,
+            self.values_normalized,
             self.x,
             self.y,
             self.width,
