@@ -5,54 +5,25 @@ from shutil import rmtree
 import string
 import time
 import os
-
-
-class CloneObject(object):
-    CLONE = None
-
-    def __init__(self, _id, _clone_class, _type, _mass,
-                 _length, _sloc, _file, _row, _column, _offset):
-        self.CLONE = {
-            "id": _id,
-            "clone_class": _clone_class,
-            "type": _type,
-            "metadata": {
-                "mass": _mass,
-                "length": _length,
-                "sloc": _sloc
-            },
-            "location": {
-                "file": _file,
-                "row": _row,
-                "column": _column,
-                "offset": _offset
-            },
-            "fragment": "if (isEmpty(var)) { System.out.println(\"hello world\");}"
-        }
-
-    def __repr__(self) -> str:
-        return json.dumps(self.CLONE)
-
+from cloneproject import CloneObject, CloneProject
 
 class TestRCF(Thread):
     DIR = "./watchdir"
-
-    META_JSON = {
-        "project": "sampleProject{}".format(time.time().hex()),
-        "location": "c:/temp/cloneProject",
-        "time": "{}".format(time.time()),
-        "sloc": random.randint(24000, 30000),
-        "loc": random.randint(30000, 40000)
-    }
 
     def run(self):
         # os.chdir(self.DIR)
         rmtree(self.DIR, True)
         os.mkdir(self.DIR)
-        time.sleep(5)
-
+        time.sleep(10)
         f = open(self.DIR+"/METADATA.json", "w+")
-        f.write(json.dumps(self.META_JSON))
+        proj = CloneProject(
+            "sampleProject{}".format(time.time().hex()),
+            "c:/temp/cloneProject",
+            "{}".format(time.time()),
+            random.randint(24000, 30000),
+            random.randint(30000, 40000)
+        )
+        f.write(proj.__str__())
         f.close()
 
         for i in range(0, 100):
@@ -74,7 +45,7 @@ class TestRCF(Thread):
                                 _length,
                                 _sloc,
                                 "{0}/{1}/{2}".format(
-                                    self.META_JSON["location"],
+                                    proj.METADATA["location"],
                                     cloneclass_folder,
                                     cloneclass_name),
                                 random.randint(0, _length),
@@ -90,7 +61,14 @@ class TestRCF(Thread):
 
 if __name__ == "__main__":
     t = TestRCF()
-    print(json.dumps(t.META_JSON))
+    proj = CloneProject(
+            "sampleProject{}".format(time.time().hex()),
+            "c:/temp/cloneProject",
+            "{}".format(time.time()),
+            random.randint(24000, 30000),
+            random.randint(30000, 40000)
+        )
+    print(proj)
     cloneobj = []
     cloneclass_name = "".join(random.choice(string.ascii_letters) for x in range(random.randint(4, 8)))+".java"
     cloneclass_folder = "".join(random.choice(string.ascii_letters) for x in range(random.randint(3, 9)))
@@ -106,7 +84,7 @@ if __name__ == "__main__":
                         _length,
                         _sloc,
                         "{0}/{1}/{2}".format(
-                            t.META_JSON["location"],
+                            proj.METADATA["location"],
                             cloneclass_folder,
                             cloneclass_name),
                         random.randint(0, _length),

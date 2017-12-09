@@ -1,12 +1,13 @@
 from tkinter import *
 
 import time
-
+import json
 from filemonitor import Monitor
 from threading import Thread
 from pychart.draw import PyChart
 from treemap.draw import TreeMap
 from testrcf import TestRCF
+from cloneproject import CloneProject, CloneObject
 import multiprocessing
 
 class Monitoring(Thread):
@@ -22,15 +23,17 @@ class Monitoring(Thread):
 
 
 class Handler(Thread):
+    project = None
+
     def __init__(self, q, i):
         Thread.__init__(self)
         self.i = i
         self.q = q
 
-    def addText(self, t):
-        T = Text(self.i.frame, height=2, width=30)
-        T.pack()
-        T.insert(END, "Got: {}".format(t))
+    # def addText(self, t):
+    #     T = Text(self.i.frame, height=2, width=30)
+    #     T.pack()
+    #     T.insert(END, "Got: {}".format(t))
 
     def draw(self):
         for widget in self.i.frame.winfo_children():
@@ -54,6 +57,15 @@ class Handler(Thread):
         while True:
             obj = self.q.get()
             # TODO: Handle different actions here
+            with open(obj.src_path, 'r') as _cf:
+                _content = json.loads(_cf.read())
+            if (obj.src_path.split('/')[-1] == "METADATA.JSON"):
+                self.project = CloneProject().reload(_content)
+                print(self.project)
+            else:
+                print(_content)
+                # self.reload()
+
             # self.addText(obj.src_path)
             self.draw()
 
