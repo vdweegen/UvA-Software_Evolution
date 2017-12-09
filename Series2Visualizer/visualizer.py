@@ -1,10 +1,13 @@
 from tkinter import *
+
+import time
+
 from filemonitor import Monitor
 from threading import Thread
 from pychart.draw import PyChart
 from treemap.draw import TreeMap
+from testrcf import TestRCF
 import multiprocessing
-
 
 class Monitoring(Thread):
     def __init__(self, q):
@@ -105,6 +108,11 @@ class Interface(Thread):
 
 if __name__ == "__main__":
     try:
+        # TestRCF
+        testrcf = TestRCF()
+        testrcf.start()
+        time.sleep(5)
+
         queue = multiprocessing.Queue()
         fm = Monitoring(queue)
         fm.start()
@@ -123,3 +131,4 @@ if __name__ == "__main__":
     finally:
         fm.join()
         h.join()
+        testrcf.join()
