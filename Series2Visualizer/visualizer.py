@@ -30,8 +30,18 @@ class Handler(Thread):
     def draw(self):
         for widget in self.i.frame.winfo_children():
             widget.destroy()
-        t = PyChart()
-        # t = TreeMap()
+
+        if self.i.type == "treemap":
+            t = TreeMap()
+        elif self.i.type == "hdg":
+            pass
+        elif self.i.type == "scatter":
+            pass
+        elif self.i.type == "piechart":
+            t = PyChart()
+        else:
+            t = TreeMap()
+
         t.vals(None) # TODO: Add Percentages
         t.draw(self.i.frame)
 
@@ -44,14 +54,10 @@ class Handler(Thread):
 
 
 class Interface(object):
-    def Treemap(self):
-        pass
+    type = "treemap" # Default is treemap
 
-    def Scatter(self):
-        pass
-
-    def HDG(self):
-        pass
+    def setType(self, type):
+        self.type = type
 
     def About(self):
         pass
@@ -70,9 +76,14 @@ class Interface(object):
 
         # Visualizationmenu
         self.visualizationmenu = Menu(self.menu)
-        self.visualizationmenu.add_command(label="Treemap", command=self.Treemap)
-        self.visualizationmenu.add_command(label="Scatterplot", command=self.Scatter)
-        self.visualizationmenu.add_command(label="Hierarchical Dependecy Graphy", command=self.HDG)
+        self.visualizationmenu.add_command(label="Treemap",
+                                           command=lambda: self.setType("treemap"))
+        self.visualizationmenu.add_command(label="Piechart",
+                                           command=lambda: self.setType("piechart"))
+        self.visualizationmenu.add_command(label="Scatterplot",
+                                           command=lambda: self.setType("scatter"))
+        self.visualizationmenu.add_command(label="Hierarchical Dependecy Graphy",
+                                           command=lambda: self.setType("hdg"))
 
         # Helpmenu
         self.helpmenu = Menu(self.menu)
