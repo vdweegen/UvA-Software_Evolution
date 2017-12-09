@@ -5,18 +5,22 @@ import squarify
 # these values define the coordinate system for the returned rectangles
 # the values will range from x to x + width and y to y + height
 class TreeMap:
-    def vals(self, values):
-        # TODO: values -> vals
-        self.vals = []
-        # Currently draws random pycharts
+    def vals(self, project):
+        self.vals = [project.get_sloc()]
+
+        # Classes with clones
+        for cls in project.CLASSES:
+            for cos in cls:
+                self.vals.append(cos.get_sloc())
+
         self.x = 0
         self.y = 0
         self.width = 700
-        self.height = 433
+        self.height = 700
 
         # self.vals = [500, 433, 78, 25, 25, 7]
-        for i in range(0,50):
-            self.vals.append(randint(100,500))
+        # for i in range(0,50):
+        #     self.vals.append(randint(100,500))
         self.vals = squarify.normalize_sizes(
             self.vals,
             self.width,
