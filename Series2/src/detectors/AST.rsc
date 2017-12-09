@@ -1,6 +1,7 @@
 module detectors::AST
 
 import IO;
+import lang::json::IO;
 import lang::java::jdt::m3::AST;
 import lang::java::\syntax::Java15;
 import lang::java::m3::AST;
@@ -12,8 +13,18 @@ import util::Math;
 import util::Benchmark;
 import Type;
 import Map;
+import util::UUID;
 
+
+//import lang::java::m3::AST;
+import lang::java::jdt::m3::AST;
+import lang::java::\syntax::Java15;
 import ListRelation;
+
+public loc littleClass = |project://smallsql0.21_src/src/smallsql/tools/CommandLine.java|;
+public loc smallProject = |project://smallsql0.21_src|;
+public Declaration littleClassAst = createAstFromFile(littleClass, false);
+public set[node] smast = createAstsFromEclipseProject(smallProject, false);
 
 
 public int THRESHOLD = 30;
@@ -47,7 +58,13 @@ public void run(set[node] ds) {
 	idx = reverse(sort([i | i <-potentials]));
 	println(idx);
 	set[node] cloneFound = {};
+	
+	list[map[str, value]] classReport = [];
+	
+	
+	
 	for(x <- idx) {
+		cloneClassId = uuidi();
 		
 		p = byHash[{x}];
 		//println("<cloneFound> <isSubTree(p[0], cloneFound)>");
@@ -60,10 +77,12 @@ public void run(set[node] ds) {
 			tuple[node, list[node]] ht = headTail(p);
 			node n = ht[0];
 			m = ir(n);
+			classReport += extractInfo(n, cloneClassId) + ("id": uuid(),"type": 1);
 			for(z <- ht[1]) {
+			
 				if (m := ir(z)) {
 					//[*_,z:n,*_] := /
-					
+					classReport += extractInfo(z, cloneClassId) + ("id": uuid(), "type": 1);
 					println("Match <z@src> <n@src>");
 					clones += <n@src, z@src>;
 					cloneFound += {n , z};
@@ -71,6 +90,7 @@ public void run(set[node] ds) {
 			
 				
 			}
+			
 			p = ht[1];
 		}
 		
@@ -89,12 +109,21 @@ public void run(set[node] ds) {
 		'<readFile(x)>
 		' <}>
 		");
+		
+		writeJSON(|file:///c:/py/aFolder| + ("s" + ".json"), classReport);
+		println(classReport);
 	}
 	
 	//println("Number of potential <size(dup(clones))> ");
 	println("Time taken <realTime() - startTime>");
 	
 }
+
+public map[str, value] extractInfo(node n, int cc) = (
+						"id" : 1,
+						"cloneClass" : cc,
+						"fragment": readFile(n@src)
+					);
 
 public bool compareCloneBasic(node s1, node s2) {
 
