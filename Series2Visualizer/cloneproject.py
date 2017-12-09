@@ -14,6 +14,12 @@ class CloneProject(object):
             "loc": _loc
         }
 
+    def get_loc(self):
+        return self.METADATA["loc"]
+
+    def get_sloc(self):
+        return self.METADATA["sloc"]
+
     def add_class(self, _class):
         self.CLASSES.append(_class)
 
@@ -46,6 +52,12 @@ class CloneObject(object):
             },
             "fragment": "if (isEmpty(var)) { System.out.println(\"hello world\");}"
         }
+
+    def get_sloc(self):
+        return self.CLONE["metadata"]["sloc"]
+
+    def get_type(self):
+        return self.CLONE["type"]
 
     def load(self, content):
         self.CLONE = content
