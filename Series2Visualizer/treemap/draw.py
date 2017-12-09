@@ -6,28 +6,25 @@ import squarify
 # the values will range from x to x + width and y to y + height
 class TreeMap:
     def vals(self, project):
-        self.vals = [project.get_sloc()]
+        self.values = [project.get_sloc()]
 
         # Classes with clones
         for cls in project.CLASSES:
             for cos in cls:
-                self.vals.append(cos.get_sloc())
+                self.values.append(cos.get_sloc())
 
         self.x = 0
         self.y = 0
         self.width = 700
         self.height = 700
 
-        # self.vals = [500, 433, 78, 25, 25, 7]
-        # for i in range(0,50):
-        #     self.vals.append(randint(100,500))
-        self.vals = squarify.normalize_sizes(
-            self.vals,
+        self.values = squarify.normalize_sizes(
+            self.values,
             self.width,
             self.height
         )
         # self.rects = squarify.squarify(
-        #     self.vals,
+        #     self.values,
         #     self.x,
         #     self.y,
         #     self.width,
@@ -36,7 +33,7 @@ class TreeMap:
 
         # padded rectangles will probably visualize better for certain cases
         self.padded_rects = squarify.padded_squarify(
-            self.vals,
+            self.values,
             self.x,
             self.y,
             self.width,
@@ -45,7 +42,7 @@ class TreeMap:
 
     def randomcolor(self):
         r = lambda: randint(0,255)
-        return ('#%02X%02X%02X' % (r(),r(),r()))
+        return '#%02X%02X%02X' % (r(), r(), r())
 
     def draw(self, canv):
         c = Canvas(canv, width=self.width, height=self.height)
