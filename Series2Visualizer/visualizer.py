@@ -29,6 +29,7 @@ class Handler(Thread):
         Thread.__init__(self)
         self.i = i
         self.q = q
+        self.project = CloneProject()
 
     # def addText(self, t):
     #     T = Text(self.i.frame, height=2, width=30)
@@ -56,16 +57,20 @@ class Handler(Thread):
     def run(self):
         while True:
             obj = self.q.get()
-            # TODO: Handle different actions here
             with open(obj.src_path, 'r') as _cf:
                 _content = json.loads(_cf.read())
-            if (obj.src_path.split('/')[-1] == "METADATA.JSON"):
-                self.project = CloneProject().reload(_content)
-                print(self.project)
+            if str(obj.src_path.split('/')[-1]).lower() == "metadata.json":
+                print("==== RELOADING PROJECT ====")
+                self.project.reload(_content)
             else:
-                print(_content)
-                # self.reload()
-
+                _class = []
+                for _cos in _content:
+                    _co = CloneObject()
+                    _co.load(_cos)
+                    _class.append(_co)
+                print("\tAdding Class with {} Clones".format(len(_content)))
+                self.project.add_class(_class)
+            print("Number of Clone Classes: {}".format(len(self.project.CLASSES)))
             # self.addText(obj.src_path)
             self.draw()
 
