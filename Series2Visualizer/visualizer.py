@@ -51,7 +51,8 @@ class Handler(Thread):
         else:
             t = TreeMap()
 
-        t.vals(None)  # TODO: Add Percentages
+        # We pass ALL the values to the draw classes, maybe need to optimize a bit
+        t.vals(self.project)
         t.draw(self.i.frame)
 
     def run(self):
