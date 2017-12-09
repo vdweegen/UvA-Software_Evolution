@@ -46,47 +46,72 @@ public int treeMass(node n) {
 }
 public void run(node d) {
 }
+
+public list[node] getSubTrees(&T asts, int minimumMass) =  ([] | it + subTrees(ast, minimumMass) |ast <- asts);
+
+
 public void run(set[node] ds) {
 	startTime = realTime();
-	candidates = ([] | it + subTrees(d, 30) |d <- ds);
+	// Extract all substrees from AST with a mass higher then threshold
+	list[node] candidates = getSubTrees(ds, THRESHOLD);
 	
-	hashEntries = [ h@hash | h <- candidates];
+	
+	// Index candidates by hash
+	list[int] hashEntries = [ h@hash | h <- candidates];
+	// Create RelationList with hash as domain
 	byHash = bucketfy(candidates);
+	//Extract all hashes with more than 1 occurance
 	potentials = domain(rangeX(distribution(hashEntries), {1}));
-	clones = [];
 	
+	clones = [];
+	// Sort to get the largest subtress first
 	idx = reverse(sort([i | i <-potentials]));
 	println(idx);
 	set[node] cloneFound = {};
 	
-	list[map[str, value]] classReport = [];
+	list[list[map[str, value]]] classReports = [];
+	
 	
 	
 	
 	for(x <- idx) {
 		cloneClassId = uuidi();
-		
+		list[map[str, value]] classReport = [];
 		p = byHash[{x}];
 		//println("<cloneFound> <isSubTree(p[0], cloneFound)>");
+		//println(x);
+		//iprint(p);
+		//println(cloneFound);
+		println(p[0]@hash);
+		println("Match <size(p)>");
 		
 		if (isSubTree(p[0], cloneFound)) {
+			println("<p[0]@hash> is subclone discarding class");
 			continue;
 		}
 		
-		while (size(p) > 0) {
+		while (size(p) > 1) {
 			tuple[node, list[node]] ht = headTail(p);
 			node n = ht[0];
+			println("In while loop");
 			m = ir(n);
-			classReport += extractInfo(n, cloneClassId) + ("id": uuid(),"type": 1);
-			for(z <- ht[1]) {
+			println("Match <n@src>");
+			cloneFound += n;
+			classReport += extractInfo(n, cloneClassId) + ("src": n@src, "id": uuid(),"type": 1);
 			
-				if (m := ir(z)) {
-					//[*_,z:n,*_] := /
-					classReport += extractInfo(z, cloneClassId) + ("id": uuid(), "type": 1);
-					println("Match <z@src> <n@src>");
-					clones += <n@src, z@src>;
-					cloneFound += {n , z};
+			for(z <- ht[1]) {
+				println("checking if the same, <m := ir(z)>");
+				int t = 1;
+				if (m !:= ir(z)) {
+					t = 2;
 				}
+				 
+				classReport += (extractInfo(z, cloneClassId) + ("src": z@src,"id": uuid(), "type": t));
+				println("Match <z@src> <n@src>");
+				clones += <n@src, z@src>;
+				cloneFound += z;
+				
+				
 			
 				
 			}
@@ -94,24 +119,27 @@ public void run(set[node] ds) {
 			p = ht[1];
 		}
 		
-		
+		classReports += [classReport];
 	}
+	
+	println(clones);
+	
 	
 	indexClones = (index(clones));
 	
 	for(cl <- indexClones) {
-		println("
-		' Clone class
-		' Original @ <cl>
-		'<readFile(cl)>
-		' <for(x <- indexClones[cl]){> 
-		' Clone @ <x>
-		'<readFile(x)>
-		' <}>
-		");
-		
-		writeJSON(|file:///c:/py/aFolder| + ("s" + ".json"), classReport);
-		println(classReport);
+		//println("
+		//' Clone class
+		//' Original @ <cl>
+		//'<readFile(cl)>
+		//' <for(x <- indexClones[cl]){> 
+		//' Clone @ <x>
+		//'<readFile(x)>
+		//' <}>
+		//");
+		//
+		writeJSON(|file:///c:/py/aFolder| + ("s" + ".json"), classReports);
+		println(classReports);
 	}
 	
 	//println("Number of potential <size(dup(clones))> ");
@@ -254,7 +282,7 @@ public int hashFast (node d) {
 	visit(d) {
 		case node n: {
 		//println(getName(n));
-			i += (i | it + x | x <- chars(getName(n)[0..2]));
+			i += (i | it + x | x <- chars(getName(n)[0..5]));
 		}
 	}
 	
@@ -265,14 +293,19 @@ public int hashFast (node d) {
 
 @memo
 public node ir(node n) {
-	return visit (n) {
-	case \simpleName(str name) => \simpleName("")
-	 case node m => {
+	
+	node nir = visit (n) {
+	case \simpleName(str name) => \simpleName("id1")
+	case \variable(str name, int extraDimensions) => variable("id1", extraDimensions)
+	case \variable(str name, int extraDimensions, Expression \initializer) => variable("id1", extraDimensions, \initializer)
+	case node m => {
 			s = unset(m);
 		
 		}
-	}
-
+	};
+	
+	// iprint(nir);
+	return nir;
 }
 
 
