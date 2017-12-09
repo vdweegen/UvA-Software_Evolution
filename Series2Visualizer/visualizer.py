@@ -55,7 +55,7 @@ class Handler(Thread):
             self.draw()
 
 
-class Interface(object):
+class Interface(Thread):
     type = "treemap"  # Default is treemap
 
     def setType(self, type):
