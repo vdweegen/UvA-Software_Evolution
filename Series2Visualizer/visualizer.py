@@ -77,7 +77,8 @@ class Handler(Thread):
 
 
 class Interface(Thread):
-    type = "treemap"  # Default is treemap
+    # type = "treemap"  # Default is treemap
+    type = "piechart"
 
     def setType(self, type):
         self.type = type

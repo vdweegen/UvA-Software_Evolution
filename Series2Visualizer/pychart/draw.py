@@ -5,6 +5,10 @@ class PyChart:
     width = 500
     height = 500
     project_sloc = 0
+    color_type_one = "blue"
+    color_type_two = "yellow"
+    color_type_three = "red"
+    color_type_base = "green"
 
     def __init__(self):
         self.values = {'q1': 0, 'q2': 0, 'q3': 0, 'q4': 0}
@@ -28,18 +32,29 @@ class PyChart:
         self.values['q4'] = self.project_sloc - (self.values['q1'] + self.values['q2'] + self.values['q3'])  # Total No of Lines
 
     def draw(self, canv):
+        l = Canvas(canv, width=190, height=self.height)
+        l.pack(side=LEFT, anchor=NW)
+        w = Label(l, text="% Clone Type #1", bg=self.color_type_one, fg="white")
+        w.pack(fill=X)
+        w = Label(l, text="% Clone Type #2", bg=self.color_type_two, fg="black")
+        w.pack(fill=X)
+        w = Label(l, text="% Clone Type #3", bg=self.color_type_three, fg="white")
+        w.pack(fill=X)
+        w = Label(l, text="% Project SLOC", bg=self.color_type_base, fg="white")
+        w.pack(fill=X)
+
         c = Canvas(canv, width=self.width, height=self.height)
-        c.pack()
-        c.create_arc((2, 2, self.width, self.height), fill="#FAF402", outline="#FAF402",
+        c.pack(side=RIGHT)
+        c.create_arc((2, 2, self.width, self.height), fill=self.color_type_one, outline="black",
                      start=self.prop(0),
                      extent=self.prop(self.values['q1']))
-        c.create_arc((2, 2, self.width, self.height), fill="#00AC36", outline="#00AC36",
+        c.create_arc((2, 2, self.width, self.height), fill=self.color_type_two, outline="black",
                      start=self.prop(self.values['q1']),
                      extent=self.prop(self.values['q2']))
-        c.create_arc((2, 2, self.width, self.height), fill="#7A0871", outline="#7A0871",
+        c.create_arc((2, 2, self.width, self.height), fill=self.color_type_three, outline="black",
                      start=self.prop(self.values['q1'] + self.values['q2']),
                      extent=self.prop(self.values['q3']))
-        c.create_arc((2, 2, self.width, self.height), fill="#E00022", outline="#E00022",
+        c.create_arc((2, 2, self.width, self.height), fill=self.color_type_base, outline="black",
                      start=self.prop(self.values['q1'] + self.values['q2'] + self.values['q3']),
                      extent=self.prop(self.values['q4']))
         canv.update()
