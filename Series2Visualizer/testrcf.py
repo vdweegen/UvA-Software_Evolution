@@ -20,8 +20,8 @@ class TestRCF(Thread):
             "sampleProject{}".format(time.time().hex()),
             "c:/temp/cloneProject",
             "{}".format(time.time()),
-            random.randint(24000, 30000),
-            random.randint(30000, 40000)
+            random.randint(2400, 3000),
+            random.randint(3000, 4000)
         )
         f.write(proj.__str__())
         f.close()
