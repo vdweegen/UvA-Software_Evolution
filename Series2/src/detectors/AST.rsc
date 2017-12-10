@@ -32,6 +32,7 @@ anno int node @ hash;
 anno int node @ mass;
 anno int node @ bucket;
 anno loc node @ src;
+anno loc node @ id;
 
 /*
 
@@ -40,6 +41,8 @@ anno loc node @ src;
 
 */
 
+public set[node] loadAst(loc file) = {createAstFromFile(file, false)};
+
 @memo
 public int treeMass(node n) {
 	return countNodes(n);
@@ -47,13 +50,14 @@ public int treeMass(node n) {
 public void run(node d) {
 }
 
-public list[node] getSubTrees(&T asts, int minimumMass) =  ([] | it + subTrees(ast, minimumMass) |ast <- asts);
+public list[node] preprocess(&T asts, int minimumMass) =  ([] | it + subTrees(ast, minimumMass) |ast <- asts);
+
 
 
 public void run(set[node] ds) {
 	startTime = realTime();
 	// Extract all substrees from AST with a mass higher then threshold
-	list[node] candidates = getSubTrees(ds, THRESHOLD);
+	list[node] candidates = preprocess(ds, THRESHOLD);
 	
 	
 	// Index candidates by hash
@@ -69,7 +73,7 @@ public void run(set[node] ds) {
 	println(idx);
 	set[node] cloneFound = {};
 	
-	list[list[map[str, value]]] classReports = [];
+	map[int, list[map[str, value]]] classReports = ();
 	
 	
 	
@@ -78,10 +82,7 @@ public void run(set[node] ds) {
 		cloneClassId = uuidi();
 		list[map[str, value]] classReport = [];
 		p = byHash[{x}];
-		//println("<cloneFound> <isSubTree(p[0], cloneFound)>");
-		//println(x);
-		//iprint(p);
-		//println(cloneFound);
+
 		println(p[0]@hash);
 		println("Match <size(p)>");
 		
@@ -89,6 +90,7 @@ public void run(set[node] ds) {
 			println("<p[0]@hash> is subclone discarding class");
 			continue;
 		}
+		map[loc id, map[str, value] clone] cloneCache = ();
 		
 		while (size(p) > 1) {
 			tuple[node, list[node]] ht = headTail(p);
@@ -97,7 +99,14 @@ public void run(set[node] ds) {
 			m = ir(n);
 			println("Match <n@src>");
 			cloneFound += n;
-			classReport += extractInfo(n, cloneClassId) + ("src": n@src, "id": uuid(),"type": 1);
+			loc cloneId = n@id;
+			
+			lrel[str] a = [];
+			
+			cloneInfo = extractInfo(n, cloneClassId) + ("src": n@src, "id": n@id, "pairs": a);
+			cloneCache[cloneId] = cloneInfo;
+			
+			classReport += cloneInfo;
 			
 			for(z <- ht[1]) {
 				println("checking if the same, <m := ir(z)>");
@@ -105,8 +114,7 @@ public void run(set[node] ds) {
 				if (m !:= ir(z)) {
 					t = 2;
 				}
-				 
-				classReport += (extractInfo(z, cloneClassId) + ("src": z@src,"id": uuid(), "type": t));
+			
 				println("Match <z@src> <n@src>");
 				clones += <n@src, z@src>;
 				cloneFound += z;
@@ -119,30 +127,17 @@ public void run(set[node] ds) {
 			p = ht[1];
 		}
 		
-		classReports += [classReport];
+		classReports[cloneClassId] = classReport;
 	}
 	
-	println(clones);
-	
+
 	
 	indexClones = (index(clones));
-	
-	for(cl <- indexClones) {
-		//println("
-		//' Clone class
-		//' Original @ <cl>
-		//'<readFile(cl)>
-		//' <for(x <- indexClones[cl]){> 
-		//' Clone @ <x>
-		//'<readFile(x)>
-		//' <}>
-		//");
-		//
-		writeJSON(|file:///c:/py/aFolder| + ("s" + ".json"), classReports);
-		println(classReports);
+	println(indexClones);
+	for(x <- classReports) {
+		writeJSON(|file:///c:/py/aFolder| + ("<x>.json"), classReports[x]);
 	}
-	
-	//println("Number of potential <size(dup(clones))> ");
+
 	println("Time taken <realTime() - startTime>");
 	
 }
@@ -197,7 +192,8 @@ public list[node] subTrees(node d, int threshold) {
 			 	 s = setAnnotations(s, (
 			 	"mass": mass,
 			 	"hash": hashValue,
-			 	"src": src
+			 	"src": src,
+			 	"id": uuid()
 			 	//,
 			 	//"bucket": hashValue % 3 
 				 ));
@@ -214,14 +210,7 @@ public list[node] subTrees(node d, int threshold) {
 	return subtrees;
 }
 
-//public void nameThatNode(node n) {
-//	
-//	visit(n) {
-//		
-//		case node n : println("<getName(n)>");
-//	}
-//
-//}
+
 @memo
 public int countNodes(node d) {
 	count = 1;

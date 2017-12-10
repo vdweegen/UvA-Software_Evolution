@@ -18,7 +18,7 @@ CloneD has Type 2 relation with CloneB
 CloneC has Type 1 relation with CloneD
 CloneD has Type 1 relation with CloneC
 
-This can be expressed as a list of relations in the json.\
+This can be expressed as a list of relations in the json.
 
 {
 	pairs: [
