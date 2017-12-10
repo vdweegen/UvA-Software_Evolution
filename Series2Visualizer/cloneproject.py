@@ -14,6 +14,15 @@ class CloneProject(object):
             "loc": _loc
         }
 
+    def get_name(self):
+        return self.METADATA["project"]
+
+    def get_location(self):
+        return self.METADATA["location"]
+
+    def get_time(self):
+        return self.METADATA["time"]
+
     def get_loc(self):
         return self.METADATA["loc"]
 
