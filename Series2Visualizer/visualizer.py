@@ -77,14 +77,19 @@ class Handler(Thread):
 
 
 class Interface(Thread):
-    # type = "treemap"  # Default is treemap
-    type = "piechart"
-
+    type = "treemap"  # Default is treemap
+    # type = "piechart"
     def setType(self, type):
         self.type = type
 
+    ABOUT_TEXT = """About
+
+    Put some fancy text here."""
+
     def About(self):
-        pass
+        toplevel = Toplevel()
+        label1 = Label(toplevel, text=self.ABOUT_TEXT, height=0, width=100)
+        label1.pack()
 
     def __init__(self):
         Thread.__init__(self)
