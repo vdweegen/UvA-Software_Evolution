@@ -21,7 +21,6 @@ class TreeMap:
         for rgb in HSV_tuples:
             rgb = map(lambda x: int(x * 255), colorsys.hsv_to_rgb(*rgb))
             hex_out.append('#%02x%02x%02x' % tuple(rgb))
-            # hex_out.append("".join(map(lambda x: chr(x).encode('hex'), rgb)))
         return hex_out
 
     def vals(self, project):
