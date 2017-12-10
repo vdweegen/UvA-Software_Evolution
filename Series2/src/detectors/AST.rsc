@@ -14,7 +14,7 @@ import util::Benchmark;
 import Type;
 import Map;
 import util::UUID;
-
+import Set;
 
 //import lang::java::m3::AST;
 import lang::java::jdt::m3::AST;
@@ -59,42 +59,52 @@ public map[int, list[map[str, value]]] detect(set[node] asts) {
 }
 
 
-// Sorted index and listRelation
-public tuple[list[int], lrel[int, node]] extractClones(list[node] candidates) {
+// clones indexed by hash
+public map[int, list[node]] extractClones(list[node] candidates) {
 	list[int] hashEntries = [ h@hash | h <- candidates];
 	
 	//Extract all hashes with more than 1 occurance
 	potentials = domain(rangeX(distribution(hashEntries), {1}));
 	
-	// Create RelationList with hash as domain
-	byHash = bucketfy([x|x <- candidates, x@hash in potentials]);
-	return <reverse(sort([i | i <-potentials])), byHash>;
+     map[int hash, list[node] nodes] res = ();
+	 for (e <- candidates, e@hash in potentials) {
+	   if (res[e@hash]?) {
+	   res[e@hash] += e;
+	    
+	   } else {
+	   	res[e@hash] = [e];
+	   }
+	 }
+	 
+	return res;
 }
 
 
-public map[int, list[map[str, value]]] createCloneReports(tuple[list[int], lrel[int, node]] clones) {
+
+
+public map[int, list[map[str, value]]] createCloneReports(map[int, list[node]] clones) {
 	// avoid subclones
 	set[node] cloneFound = {};
 	
-		list[int] idx = clones[0];
-	lrel[int, node] byHash = clones[1];
+	list[int] idx = reverse(sort([i | i <- clones]));
 	
 	map[int, list[map[str, value]]] classReports = ();
 	
 	for(x <- idx) {
 		cloneClassId = uuidi();
+		
 		list[map[str, value]] classReport = [];
-		p = byHash[{x}];
+		classMembers = clones[x];
 
-		if (isSubTree(p[0], cloneFound)) {
-			println("<p[0]@hash> is subclone discarding class");
+		if (isSubTree(head(classMembers), cloneFound)) {
+			println("<head(classMembers)@hash> is subclone discarding class");
 			continue;
 		}
 		map[loc id, map[str, value] clone] cloneCache = ();
 		
-		while (size(p) > 0) {
-			tuple[node, list[node]] ht = headTail(p);
-			node n = ht[0];
+		
+		for(c <- classMembers) {
+			node n = c;
 			println("In while loop");
 			m = ir(n);
 			println("Match <n@src>");
@@ -108,17 +118,15 @@ public map[int, list[map[str, value]]] createCloneReports(tuple[list[int], lrel[
 			
 			classReport += cloneInfo;
 			
-			for(z <- ht[1]) {
-				println("checking if the same, <m := ir(z)>");
-				int t = 1;
-				if (m !:= ir(z)) {
-					t = 2;
-				}
-				cloneFound += z;
-				
-			}
+			//for(z <- ht[1]) {
+			//	println("checking if the same, <m := ir(z)>");
+			//	int t = 1;
+			//	if (m !:= ir(z)) {
+			//		t = 2;
+			//	}
+			//	cloneFound += z;
+			//}
 			
-			p = ht[1];
 		}
 		
 		classReports[cloneClassId] = classReport;
@@ -126,12 +134,14 @@ public map[int, list[map[str, value]]] createCloneReports(tuple[list[int], lrel[
 	
 	return classReports;
 }
+
+
 public void run(set[node] ds) {
 	startTime = realTime();
 	// Extract all substrees from AST with a mass higher then threshold
 	list[node] candidates = preprocess(ds, THRESHOLD);
 	
-	tuple[list[int], lrel[int, node]] clones = extractClones(candidates);
+	map[int, list[node]] clones = extractClones(candidates);
 		
 	classReports = createCloneReports(clones);
 
