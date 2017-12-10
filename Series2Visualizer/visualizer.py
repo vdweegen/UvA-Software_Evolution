@@ -179,10 +179,10 @@ class Interface(Thread):
                                            command=lambda: self.setType("treemap"))
         self.visualizationmenu.add_command(label="Piechart",
                                            command=lambda: self.setType("piechart"))
-        self.visualizationmenu.add_command(label="Scatterplot",
-                                           command=lambda: self.setType("scatter"))
-        self.visualizationmenu.add_command(label="Hierarchical Dependecy Graphy",
-                                           command=lambda: self.setType("hdg"))
+        # self.visualizationmenu.add_command(label="Scatterplot",
+        #                                    command=lambda: self.setType("scatter"))
+        # self.visualizationmenu.add_command(label="Hierarchical Dependecy Graphy",
+        #                                    command=lambda: self.setType("hdg"))
 
         # Helpmenu
         self.helpmenu = Menu(self.menu)
