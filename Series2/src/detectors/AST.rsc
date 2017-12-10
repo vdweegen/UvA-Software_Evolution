@@ -21,13 +21,10 @@ import lang::java::jdt::m3::AST;
 import lang::java::\syntax::Java15;
 import ListRelation;
 
-public loc littleClass = |project://smallsql0.21_src/src/smallsql/tools/CommandLine.java|;
-public loc smallProject = |project://smallsql0.21_src|;
-public Declaration littleClassAst = createAstFromFile(littleClass, false);
-public set[node] smast = createAstsFromEclipseProject(smallProject, false);
 
 
-public int THRESHOLD = 30;
+
+public int THRESHOLD = 50;
 anno int node @ hash;
 anno int node @ mass;
 anno int node @ bucket;
@@ -53,46 +50,49 @@ public void run(node d) {
 public list[node] preprocess(&T asts, int minimumMass) =  ([] | it + subTrees(ast, minimumMass) |ast <- asts);
 
 
-
-public void run(set[node] ds) {
+public map[int, list[map[str, value]]] detect(set[node] asts) {
 	startTime = realTime();
 	// Extract all substrees from AST with a mass higher then threshold
 	list[node] candidates = preprocess(ds, THRESHOLD);
-	
-	
-	// Index candidates by hash
+
+	// map[int, list[map[str, value]]] cloneClasses = 
+}
+
+
+// Sorted index and listRelation
+public tuple[list[int], lrel[int, node]] extractClones(list[node] candidates) {
 	list[int] hashEntries = [ h@hash | h <- candidates];
-	// Create RelationList with hash as domain
-	byHash = bucketfy(candidates);
+	
 	//Extract all hashes with more than 1 occurance
 	potentials = domain(rangeX(distribution(hashEntries), {1}));
 	
-	clones = [];
-	// Sort to get the largest subtress first
-	idx = reverse(sort([i | i <-potentials]));
-	println(idx);
+	// Create RelationList with hash as domain
+	byHash = bucketfy([x|x <- candidates, x@hash in potentials]);
+	return <reverse(sort([i | i <-potentials])), byHash>;
+}
+
+
+public map[int, list[map[str, value]]] createCloneReports(tuple[list[int], lrel[int, node]] clones) {
+	// avoid subclones
 	set[node] cloneFound = {};
 	
+		list[int] idx = clones[0];
+	lrel[int, node] byHash = clones[1];
+	
 	map[int, list[map[str, value]]] classReports = ();
-	
-	
-	
 	
 	for(x <- idx) {
 		cloneClassId = uuidi();
 		list[map[str, value]] classReport = [];
 		p = byHash[{x}];
 
-		println(p[0]@hash);
-		println("Match <size(p)>");
-		
 		if (isSubTree(p[0], cloneFound)) {
 			println("<p[0]@hash> is subclone discarding class");
 			continue;
 		}
 		map[loc id, map[str, value] clone] cloneCache = ();
 		
-		while (size(p) > 1) {
+		while (size(p) > 0) {
 			tuple[node, list[node]] ht = headTail(p);
 			node n = ht[0];
 			println("In while loop");
@@ -114,13 +114,7 @@ public void run(set[node] ds) {
 				if (m !:= ir(z)) {
 					t = 2;
 				}
-			
-				println("Match <z@src> <n@src>");
-				clones += <n@src, z@src>;
 				cloneFound += z;
-				
-				
-			
 				
 			}
 			
@@ -130,10 +124,17 @@ public void run(set[node] ds) {
 		classReports[cloneClassId] = classReport;
 	}
 	
-
+	return classReports;
+}
+public void run(set[node] ds) {
+	startTime = realTime();
+	// Extract all substrees from AST with a mass higher then threshold
+	list[node] candidates = preprocess(ds, THRESHOLD);
 	
-	indexClones = (index(clones));
-	println(indexClones);
+	tuple[list[int], lrel[int, node]] clones = extractClones(candidates);
+		
+	classReports = createCloneReports(clones);
+
 	for(x <- classReports) {
 		writeJSON(|file:///c:/py/aFolder| + ("<x>.json"), classReports[x]);
 	}
@@ -183,7 +184,7 @@ public list[node] subTrees(node d, int threshold) {
 	visit(d) {
 		case node n:  {
 			if (n.src?) {
-			s = unsetRec(n);
+			 s = unsetRec(n);
 			 mass = treeMass(s);
 			 if (mass >= threshold) {
 			 	 hashValue = hashFast(s);
