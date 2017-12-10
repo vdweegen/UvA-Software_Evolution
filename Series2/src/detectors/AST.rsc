@@ -100,22 +100,17 @@ public map[int, list[map[str, value]]] createCloneReports(map[int, list[node]] c
 			println("<head(classMembers)@hash> is subclone discarding class");
 			continue;
 		}
+		
 		map[loc id, map[str, value] clone] cloneCache = ();
 		
 		
-		for(c <- classMembers) {
-			node n = c;
-			println("In while loop");
-			m = ir(n);
-			println("Match <n@src>");
+		for(n <- classMembers) {
+		
 			cloneFound += n;
+			node cleanNode = ir(n);
 			loc cloneId = n@id;
 			
-			lrel[str] a = [];
-			
-			cloneInfo = extractInfo(n, cloneClassId) + ("src": n@src, "id": n@id, "pairs": a);
-			cloneCache[cloneId] = cloneInfo;
-			
+			cloneInfo = ("cloneClass" : cloneClassId,"fragment": readFile(n@src), "src": n@src, "id": n@id);
 			classReport += cloneInfo;
 			
 			//for(z <- ht[1]) {
@@ -126,6 +121,7 @@ public map[int, list[map[str, value]]] createCloneReports(map[int, list[node]] c
 			//	}
 			//	cloneFound += z;
 			//}
+
 			
 		}
 		
@@ -144,8 +140,11 @@ public void run(set[node] ds) {
 	map[int, list[node]] clones = extractClones(candidates);
 		
 	classReports = createCloneReports(clones);
-
+	
+	println([x | x<- classReports]);
+	
 	for(x <- classReports) {
+		println(x);
 		writeJSON(|file:///c:/py/aFolder| + ("<x>.json"), classReports[x]);
 	}
 
@@ -153,11 +152,7 @@ public void run(set[node] ds) {
 	
 }
 
-public map[str, value] extractInfo(node n, int cc) = (
-						"id" : 1,
-						"cloneClass" : cc,
-						"fragment": readFile(n@src)
-					);
+
 
 public bool compareCloneBasic(node s1, node s2) {
 
