@@ -1,0 +1,53 @@
+[
+  {
+    "id": "1",
+   "clone_class" :  "123",
+    "type" : 1,
+    "metadata" : {
+      "mass": 6,
+      "length": 25,
+      "sloc": 2
+    },
+    "location": {
+      "file": "c:/temp/cloneProject/class.java",
+      "row": 10,
+      "column": 10,
+      "offset": [0,100]
+    },
+    "fragment": "if (isEmpty(var)) { System.out.println(\"hello world\");}"
+  },
+    {
+    "id": "2",
+   "clone_class" :  "123",
+    "type" : 1,
+    "metadata" : {
+      "mass": 6,
+      "length": 25,
+      "sloc": 2
+    },
+    "location": {
+      "file": "c:/temp/cloneProject/car.java",
+      "row": 25,
+      "column": 10,
+      "offset": [0,100]
+    },
+    "fragment": "if (isEmpty(var)) { System.out.println(\"hello world\");}"
+  },
+    {
+    "id": "3",
+   "clone_class" :  "123",
+    "type" : 2,
+    "metadata" : {
+      "mass": 6,
+      "length": 25,
+      "sloc": 2
+    },
+    "location": {
+      "file": "c:/temp/cloneProject/testClass.java",
+      "row": 15,
+      "column": 10,
+      "offset": [0,100]
+    },
+    "fragment": "if (isEmpty(apple)) { System.out.println(\"hello world\");}"
+  }
+]
