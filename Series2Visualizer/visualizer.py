@@ -1,12 +1,12 @@
 from tkinter import *
 
-import time
+# import time
 import json
 from filemonitor import Monitor
 from threading import Thread
 from pychart.draw import PyChart
 from treemap.draw import TreeMap
-from testrcf import TestRCF
+# from testrcf import TestRCF
 from cloneproject import CloneProject, CloneObject
 import multiprocessing
 
@@ -205,9 +205,9 @@ class Interface(Thread):
 if __name__ == "__main__":
     try:
         # TestRCF
-        testrcf = TestRCF()
-        testrcf.start()
-        time.sleep(5)
+        # testrcf = TestRCF()
+        # testrcf.start()
+        # time.sleep(5)
 
         queue = multiprocessing.Queue()
         fm = Monitoring(queue)
@@ -227,4 +227,4 @@ if __name__ == "__main__":
     finally:
         fm.join()
         h.join()
-        testrcf.join()
+        # testrcf.join()
