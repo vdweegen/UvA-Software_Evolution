@@ -24,7 +24,7 @@ import ListRelation;
 
 
 
-public int THRESHOLD = 50;
+public int THRESHOLD = 30;
 anno int node @ hash;
 anno int node @ mass;
 anno int node @ bucket;
@@ -32,31 +32,14 @@ anno loc node @ src;
 anno loc node @ id;
 
 /*
-
 	Annotate AST
-
-
 */
 
 public set[node] loadAst(loc file) = {createAstFromFile(file, false)};
 
-@memo
-public int treeMass(node n) {
-	return countNodes(n);
-}
-public void run(node d) {
-}
 
 public list[node] preprocess(&T asts, int minimumMass) =  ([] | it + subTrees(ast, minimumMass) |ast <- asts);
 
-
-public map[int, list[map[str, value]]] detect(set[node] asts) {
-	startTime = realTime();
-	// Extract all substrees from AST with a mass higher then threshold
-	list[node] candidates = preprocess(ds, THRESHOLD);
-
-	// map[int, list[map[str, value]]] cloneClasses = 
-}
 
 
 // clones indexed by hash
@@ -91,7 +74,7 @@ public map[int, list[map[str, value]]] createCloneReports(map[int, list[node]] c
 	map[int, list[map[str, value]]] classReports = ();
 	
 	for(x <- idx) {
-		cloneClassId = uuidi();
+		cloneClassId = abs(uuidi());
 		
 		list[map[str, value]] classReport = [];
 		classMembers = clones[x];
@@ -110,26 +93,53 @@ public map[int, list[map[str, value]]] createCloneReports(map[int, list[node]] c
 			node cleanNode = ir(n);
 			loc cloneId = n@id;
 			
-			cloneInfo = ("cloneClass" : cloneClassId,"fragment": readFile(n@src), "src": n@src, "id": n@id);
+			list[map[str, value]] pairs;
+			
+			pairs = for(cm <- classMembers, cm@id != n@id) {
+				int t = 1;
+				m = ir(n);
+				if (m !:= ir(cm)) {
+					t = 2;
+				}
+				
+				append(("id": cm@id, "type": t));
+				
+			}
+			
+			println(pairs);
+			
+			cloneInfo = ("cloneClass" : cloneClassId,"fragment": readFile(n@src), "src": n@src, "id": n@id, "pairs": pairs);
 			classReport += cloneInfo;
 			
-			//for(z <- ht[1]) {
-			//	println("checking if the same, <m := ir(z)>");
-			//	int t = 1;
-			//	if (m !:= ir(z)) {
-			//		t = 2;
-			//	}
-			//	cloneFound += z;
-			//}
 
 			
 		}
+		
+		//for(z <- ht[1]) {
+		//	println("checking if the same, <m := ir(z)>");
+		//	int t = 1;
+		//	if (m !:= ir(z)) {
+		//		t = 2;
+		//	}
+		//	cloneFound += z;
+		//}
 		
 		classReports[cloneClassId] = classReport;
 	}
 	
 	return classReports;
 }
+
+public map[int, list[map[str, value]]]  detect(set[node] ds) {
+	// Extract all substrees from AST with a mass higher then threshold
+	list[node] candidates = preprocess(ds, THRESHOLD);
+	
+	map[int, list[node]] clones = extractClones(candidates);
+		
+	classReports = createCloneReports(clones);
+	return classReports;
+
+} 
 
 
 public void run(set[node] ds) {
@@ -141,7 +151,6 @@ public void run(set[node] ds) {
 		
 	classReports = createCloneReports(clones);
 	
-	println([x | x<- classReports]);
 	
 	for(x <- classReports) {
 		println(x);
@@ -153,13 +162,6 @@ public void run(set[node] ds) {
 }
 
 
-
-public bool compareCloneBasic(node s1, node s2) {
-
-	
-
-	return false;
-}
 
 public bool isSubTree(node n, node p) {
 	return /n := p;
@@ -180,8 +182,7 @@ public lrel[int, node] bucketfy(list[node] s) {
 	return buckets;
 }
 
-@memo
-public node unsetNodes(node n) = unsetRec(n); 
+
 
 public list[node] subTrees(node d, int threshold) {
 	list[node] subtrees = [];	
@@ -216,30 +217,6 @@ public list[node] subTrees(node d, int threshold) {
 	return subtrees;
 }
 
-
-@memo
-public int countNodes(node d) {
-	count = 1;
-	top-down visit(d) {
-		case node n:  {
-			 count += 1;
-		}
-	}
-	
-	return count;
-	
-}
-
-public node annoTreeMass(node n) {
-	return visit (n) {
-	 case node m => {
-			s = unset(m);
-			s@mass  = (countNodes(s));
-		}
-	}
-
-}
-
 @memo
 public int hash (node d) {
 	list[int] h = [];
@@ -262,21 +239,6 @@ public int hashFast (node d) {
 	visit(d) {
 		case node n: {
 		//println(getName(n));
-			i += (i | it + x | x <- chars(getName(n)[0..2]));
-		}
-	}
-	
-	return i;
-	
-	
-}
-@memo
-public int hashFast (node d) {
-	int i = 0;
-	
-	visit(d) {
-		case node n: {
-		//println(getName(n));
 			i += (i | it + x | x <- chars(getName(n)[0..5]));
 		}
 	}
@@ -285,6 +247,7 @@ public int hashFast (node d) {
 	
 	
 }
+
 
 @memo
 public node ir(node n) {
@@ -302,5 +265,24 @@ public node ir(node n) {
 	// iprint(nir);
 	return nir;
 }
+
+
+
+// Fully Tested code
+public int treeMass(node n) = countNodes(n);
+
+public int countNodes(node d) {
+	count = 0;
+	top-down visit(d) {
+		case node n:  {
+			 count += 1;
+		}
+	}
+	
+	return count;
+}
+
+@memo
+public node unsetNodes(node n) = unsetRec(n); 
 
 
