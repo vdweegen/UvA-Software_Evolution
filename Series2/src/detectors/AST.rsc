@@ -37,10 +37,7 @@ anno loc node @ id;
 
 public set[node] loadAst(loc file) = {createAstFromFile(file, false)};
 
-
 public list[node] preprocess(&T asts, int minimumMass) =  ([] | it + subTrees(ast, minimumMass) |ast <- asts);
-
-
 
 // clones indexed by hash
 public map[int, list[node]] extractClones(list[node] candidates) {
@@ -61,9 +58,6 @@ public map[int, list[node]] extractClones(list[node] candidates) {
 	 
 	return res;
 }
-
-
-
 
 public map[int, list[map[str, value]]] createCloneReports(map[int, list[node]] clones) {
 	// avoid subclones
@@ -90,15 +84,15 @@ public map[int, list[map[str, value]]] createCloneReports(map[int, list[node]] c
 		for(n <- classMembers) {
 		
 			cloneFound += n;
-			node cleanNode = ir(n);
+			node cleanNode = normalizeAST(n);
 			loc cloneId = n@id;
 			
 			list[map[str, value]] pairs;
 			
 			pairs = for(cm <- classMembers, cm@id != n@id) {
 				int t = 1;
-				m = ir(n);
-				if (m !:= ir(cm)) {
+				m = normalizeAST(n);
+				if (m !:= normalizeAST(cm)) {
 					t = 2;
 				}
 				
@@ -110,19 +104,9 @@ public map[int, list[map[str, value]]] createCloneReports(map[int, list[node]] c
 			
 			cloneInfo = ("cloneClass" : cloneClassId,"fragment": readFile(n@src), "src": n@src, "id": n@id, "pairs": pairs);
 			classReport += cloneInfo;
-			
-
+	
 			
 		}
-		
-		//for(z <- ht[1]) {
-		//	println("checking if the same, <m := ir(z)>");
-		//	int t = 1;
-		//	if (m !:= ir(z)) {
-		//		t = 2;
-		//	}
-		//	cloneFound += z;
-		//}
 		
 		classReports[cloneClassId] = classReport;
 	}
@@ -162,7 +146,6 @@ public void run(set[node] ds) {
 }
 
 
-
 public bool isSubTree(node n, node p) {
 	return /n := p;
 }
@@ -170,18 +153,6 @@ public bool isSubTree(node n, node p) {
 public bool isSubTree(node n, set[node] p) {
 	return /n := p;
 }
-
-
-public lrel[int, node] bucketfy(list[node] s) {
-	lrel[int, node] buckets = [];
-	
-	buckets = for(n <- s) {
-		append(<n@hash, n>);
-	}
-
-	return buckets;
-}
-
 
 
 public list[node] subTrees(node d, int threshold) {
@@ -194,22 +165,17 @@ public list[node] subTrees(node d, int threshold) {
 			 mass = treeMass(s);
 			 if (mass >= threshold) {
 			 	 hashValue = hashFast(s);
-				 //println("Found subtree");
 			 	 src = n.src;
 			 	 s = setAnnotations(s, (
 			 	"mass": mass,
 			 	"hash": hashValue,
 			 	"src": src,
 			 	"id": uuid()
-			 	//,
-			 	//"bucket": hashValue % 3 
 				 ));
 			 	subtrees += s;
 			 
-			 }
+			  }
 			}
-			 
-			 
 		}
 	}
 	println("Done proccessing file...");
@@ -226,20 +192,18 @@ public int hash (node d) {
 			h += chars(getName(n)[0..3]);
 		}
 	}
-	
-	
+		
 	return sum([0,*h]);
 	
-	
 }
-@memo
+
 public int hashFast (node d) {
 	int i = 0;
 	
 	visit(d) {
 		case node n: {
-		//println(getName(n));
-			i += (i | it + x | x <- chars(getName(n)[0..5]));
+
+			i += (i | it + x | x <- chars(getName(n)));
 		}
 	}
 	
@@ -249,8 +213,9 @@ public int hashFast (node d) {
 }
 
 
+
 @memo
-public node ir(node n) {
+public node normalizeAST(node n) {
 	
 	node nir = visit (n) {
 	case \simpleName(str name) => \simpleName("id1")
