@@ -42,10 +42,23 @@ test bool TestExtractClones2() = size(extractClones([ A2,  A2,  A1 ])[2]) == 2;
 test bool TestExtractClones3() = extractClones([ A1,  A2,  A3 ]) == ();
 test bool TestExtractClones4() = extractClones([ A1, A1,  A2,  A3, A3 ]) == (1:[A1, A1], 3:[A3, A3]);
 
-test bool TestSubTree1() = isSubTree(A1, "B1"(A1))  == true;
-test bool TestSubTree2() = isSubTree(A1, "B1"("C1"(A1), A2, A3))  == true;
-test bool TestSubTree3() = isSubTree(A2, "B1"(A1))  == false;
+test bool TestIsSubTree1() = isSubTree(A1, "B1"(A1))  == true;
+test bool TestIsSubTree2() = isSubTree(A1, "B1"("C1"(A1), A2, A3))  == true;
+test bool TestIsSubTree3() = isSubTree(A2, "B1"(A1))  == false;
 
 
+test bool TestVarIndex1 () = varIndex("name", ()) == <0,("name":0)>;
+test bool TestVarIndex2 () = varIndex("name", ("name":0)) == <0,("name":0)>;
+test bool TestVarIndex3 () = varIndex("second", ("name":0)) == <1,("name":0, "second": 1)>;
+test bool TestVarIndex4 () = varIndex("fourth", ("name":0, "second": 1, "third": 2, "fourth":3, "fifth": 4)) == <3,("name":0, "second": 1, "third": 2, "fourth":3, "fifth": 4)>;
+test bool TestVarIndex5 () = varIndex("fifth", ("name":0, "second": 1, "third": 2, "fourth":3)) == <4,("name":0, "second": 1, "third": 2, "fourth":3, "fifth": 4)>;
+
+
+test bool TestNormalizeAST() = normalizeAST((\newObject(\int(), [\simpleName("Jordan"), \simpleName("Erika"), \simpleName("Jordan"), simpleName("Shawn")]))) ==  (\newObject(\int(), [\simpleName("id0"), \simpleName("id1"), \simpleName("id0"), simpleName("id2")]));
+
+test bool TestSubTree() = subTrees(\simpleName("AAA")[src=|file:///|], 0) == [\simpleName("AAA")];
+test bool TestSubTree() = subTrees(\simpleName("AAA")[src=|file:///|], 0) == [\simpleName("AAA")];
+test bool TestSubTree() = subTrees(\newObject(\int(), [\simpleName("Jordan"), \simpleName("Erika"), \simpleName("Jordan")])[src=|file:///|], 0) == [\newObject(\int(), [\simpleName("Jordan"), \simpleName("Erika"), \simpleName("Jordan")])];
+test bool TestSubTree() = subTrees(\newObject(\int(), [\simpleName("Jordan")[src=|file:///|], \simpleName("Erika"), \simpleName("Jordan")])[src=|file:///|], 0) == [\simpleName("Jordan"), \newObject(\int(), [\simpleName("Jordan"), \simpleName("Erika"), \simpleName("Jordan")])];
 
 
