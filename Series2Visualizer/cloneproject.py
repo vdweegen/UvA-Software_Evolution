@@ -42,12 +42,13 @@ class CloneProject(object):
 class CloneObject(object):
     CLONE = None
 
-    def __init__(self, _id=0, _clone_class="", _type=0, _mass=0,
+    def __init__(self, _id=0, _clone_class="", _pairs=[], _mass=0,
                  _length=0, _sloc=0, _file="", _row=0, _column=0, _offset=[]):
         self.CLONE = {
             "id": _id,
             "clone_class": _clone_class,
-            "type": _type,
+            "pairs": _pairs,
+            # "type": _type,
             "metadata": {
                 "mass": _mass,
                 "length": _length,
@@ -66,7 +67,7 @@ class CloneObject(object):
         return self.CLONE["metadata"]["sloc"]
 
     def get_type(self):
-        return self.CLONE["type"]
+        return self.CLONE["pairs"][0]["type"]
 
     def load(self, content):
         self.CLONE = content

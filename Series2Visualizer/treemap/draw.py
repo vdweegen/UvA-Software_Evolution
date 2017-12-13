@@ -95,7 +95,7 @@ class TreeMap:
             text = self.CLONE_DETAILS.format(
                            clone.CLONE["id"],
                            clone.CLONE["clone_class"],
-                           clone.CLONE["type"],
+                           clone.CLONE["pairs"][0]["type"],
                            clone.CLONE["metadata"]["mass"],
                            clone.CLONE["metadata"]["length"],
                            clone.CLONE["metadata"]["sloc"],

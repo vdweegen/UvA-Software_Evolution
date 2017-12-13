@@ -40,7 +40,8 @@ class TestRCF(Thread):
                 cloneobj.append(
                     CloneObject(j,
                                 cloneclass_name,
-                                random.randint(1, 3),
+                                [{"type": random.randint(1, 2), "id": "".join(
+                                    random.choice(string.ascii_letters) for x in range(random.randint(3, 9)))}],
                                 _mass,
                                 _length,
                                 _sloc,
@@ -79,7 +80,7 @@ if __name__ == "__main__":
         cloneobj.append(
             CloneObject(j,
                         cloneclass_name,
-                        random.randint(1, 3),
+                        [{"type": random.randint(1, 2), "id": "".join(random.choice(string.ascii_letters) for x in range(random.randint(3, 9)))}],
                         _mass,
                         _length,
                         _sloc,
