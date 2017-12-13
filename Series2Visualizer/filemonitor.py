@@ -21,12 +21,12 @@ class CloneDetectionEventHandler(FileSystemEventHandler):
         self.q.put(event)
 
 class Monitor:
-    def __init__(self,q):
+    def __init__(self, q, path):
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s - %(message)s',
                             datefmt='%Y-%m-%d %H:%M:%S')
 
-        self.path = sys.argv[1] if len(sys.argv) > 1 else './watchdir'
+        self.path = path
         self.event_handler = CloneDetectionEventHandler(q)
         self.observer = Observer()
         self.observer.schedule(self.event_handler, self.path, recursive=True)

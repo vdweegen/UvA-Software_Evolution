@@ -1,19 +1,18 @@
 from tkinter import *
 
-# import time
 import json
 from filemonitor import Monitor
 from threading import Thread
 from pychart.draw import PyChart
 from treemap.draw import TreeMap
-# from testrcf import TestRCF
 from cloneproject import CloneProject, CloneObject
 import multiprocessing
+import argparse
 
 class Monitoring(Thread):
-    def __init__(self, q):
+    def __init__(self, q, path):
         Thread.__init__(self)
-        self.monitor = Monitor(q)
+        self.monitor = Monitor(q, path)
 
     def run(self):
         self.monitor.watch()
@@ -203,14 +202,24 @@ class Interface(Thread):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--debug', action='store_true', help='print debug messages to stderr')
+    parser.add_argument('--path', nargs='?', const=1, type=str)
+    args = parser.parse_args()
     try:
-        # TestRCF
-        # testrcf = TestRCF()
-        # testrcf.start()
-        # time.sleep(5)
+        if args.debug:
+            # TestRCF
+            import time
+            from testrcf import TestRCF
+            testrcf = TestRCF()
+            testrcf.start()
+            time.sleep(5)
 
         queue = multiprocessing.Queue()
-        fm = Monitoring(queue)
+        if args.path:
+            fm = Monitoring(queue, "./{}".format(args.path))
+        else:
+            fm = Monitoring(queue, "./watchdir")
         fm.start()
 
         i = Interface()
@@ -227,4 +236,5 @@ if __name__ == "__main__":
     finally:
         fm.join()
         h.join()
-        # testrcf.join()
+        if args.debug:
+            testrcf.join()
