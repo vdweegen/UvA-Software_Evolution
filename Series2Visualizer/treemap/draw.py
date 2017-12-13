@@ -9,11 +9,14 @@ class TreeMap:
     valuedetails = None
     colors = None
 
-    def __init__(self):
+    def __init__(self, skip_initial = False):
         self.height = 700
         self.width = 700
         self.y = 0
         self.x = 0
+        self.values = []
+        self.valuedetails = []
+        self.__skip_initial = skip_initial
 
     def get_colors(self, N):
         HSV_tuples = [(x * 1.0 / N, 0.5, 0.5) for x in range(N)]
@@ -24,15 +27,17 @@ class TreeMap:
         return hex_out
 
     def vals(self, project):
-        self.values = [project.get_sloc()]
-        self.valuedetails = [None]
+        if not self.__skip_initial:
+            self.values = [project.get_sloc()]
+            self.valuedetails = [None]
 
         # Classes with clones
         for cls in project.CLASSES:
             for cos in cls:
                 __sloc = cos.get_sloc()
                 self.values.append(__sloc)
-                self.values[0] -= __sloc
+                if not self.__skip_initial:
+                    self.values[0] -= __sloc
                 self.valuedetails.append(cos)
 
         # self.values.sort(reverse=False)
