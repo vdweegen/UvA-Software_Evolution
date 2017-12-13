@@ -116,33 +116,36 @@ class Handler(Thread):
     def run(self):
         while True:
             obj = self.q.get()
-            with open(obj.src_path, 'r') as _cf:
-                _content = json.loads(_cf.read())
-            if str(obj.src_path.split('/')[-1]).lower() == "metadata.json":
-                print("==== RELOADING PROJECT ====")
-                self.project.reload(_content)
-                self.clean_stats()
-            else:
-                _class = []
-                self.stats['numclonec'] += 1
-                totalclonelines = 0
-                for _cos in _content:
-                    self.stats['numclones'] += 1
-                    _co = CloneObject()
-                    _co.load(_cos)
-                    totalclonelines += _co.get_sloc()
-                    if _co.get_sloc() > self.stats['biggestc']:
-                        self.stats['biggestc'] = _co.get_sloc()
-                    _class.append(_co)
-                # print("\tAdding Class with {} Clones".format(len(_content)))
-                self.stats['duplines'] += totalclonelines
-                if totalclonelines > self.stats['biggestcc']:
-                    self.stats['biggestcc'] = totalclonelines
-                self.project.add_class(_class)
-            self.stats['duplinesp'] = (self.stats['duplines'] / self.project.get_sloc()) * 100.0
-            # print("Number of Clone Classes: {}".format(len(self.project.CLASSES)))
-            # self.addText(obj.src_path)
-            self.draw()
+            try:
+                with open(obj.src_path, 'r') as _cf:
+                    _content = json.loads(_cf.read())
+                if str(obj.src_path.split('/')[-1]).lower() == "metadata.json":
+                    print("==== RELOADING PROJECT ====")
+                    self.project.reload(_content)
+                    self.clean_stats()
+                else:
+                    _class = []
+                    self.stats['numclonec'] += 1
+                    totalclonelines = 0
+                    for _cos in _content:
+                        self.stats['numclones'] += 1
+                        _co = CloneObject()
+                        _co.load(_cos)
+                        totalclonelines += _co.get_sloc()
+                        if _co.get_sloc() > self.stats['biggestc']:
+                            self.stats['biggestc'] = _co.get_sloc()
+                        _class.append(_co)
+                    # print("\tAdding Class with {} Clones".format(len(_content)))
+                    self.stats['duplines'] += totalclonelines
+                    if totalclonelines > self.stats['biggestcc']:
+                        self.stats['biggestcc'] = totalclonelines
+                    self.project.add_class(_class)
+                self.stats['duplinesp'] = (self.stats['duplines'] / self.project.get_sloc()) * 100.0
+                # print("Number of Clone Classes: {}".format(len(self.project.CLASSES)))
+                # self.addText(obj.src_path)
+                self.draw()
+            except IsADirectoryError:
+                pass
 
 
 class Interface(Thread):
