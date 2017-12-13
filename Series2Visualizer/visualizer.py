@@ -1,6 +1,7 @@
 from tkinter import *
 
 import json
+import time
 from filemonitor import Monitor
 from threading import Thread
 from pychart.draw import PyChart
@@ -121,6 +122,7 @@ class Handler(Thread):
 
     def run(self):
         while True:
+            time.sleep(.1)
             obj = self.q.get()
             try:
                 with open(obj.src_path, 'r') as _cf:
