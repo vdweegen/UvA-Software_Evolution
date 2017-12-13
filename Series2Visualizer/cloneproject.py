@@ -24,10 +24,10 @@ class CloneProject(object):
         return self.METADATA["time"]
 
     def get_loc(self):
-        return self.METADATA["loc"]
+        return int(self.METADATA["loc"])
 
     def get_sloc(self):
-        return self.METADATA["sloc"]
+        return int(self.METADATA["sloc"])
 
     def add_class(self, _class):
         self.CLASSES.append(_class)
@@ -64,7 +64,7 @@ class CloneObject(object):
         }
 
     def get_sloc(self):
-        return self.CLONE["metadata"]["sloc"]
+        return int(self.CLONE["metadata"]["sloc"])
 
     def get_type(self):
         return self.CLONE["pairs"][0]["type"]
