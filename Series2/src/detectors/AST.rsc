@@ -37,7 +37,7 @@ anno str node @ id;
 
 public set[node] loadAst(loc file) = {createAstFromFile(file, false)};
 
-public list[node] preprocess(&T asts, int minimumMass) =  ([] | it + subTrees(ast, minimumMass) |ast <- asts);
+public list[node] preprocess(set[node] asts, int minimumMass) =  ([] | it + subTrees(ast, minimumMass) |  ast <- asts);
 
 // clones indexed by hash
 public map[int, list[node]] extractClones(list[node] candidates) {
@@ -68,6 +68,7 @@ public map[str, list[map[str, value]]] createCloneReports(map[int, list[node]] c
 	set[node] cloneFound = {};
 	
 	list[int] idx = reverse(sort([i | i <- clones]));
+
 	
 	map[str, list[map[str, value]]] classReports = ();
 	
@@ -94,13 +95,18 @@ public map[str, list[map[str, value]]] createCloneReports(map[int, list[node]] c
 			list[map[str, value]] pairs;
 			
 			pairs = for(cm <- classMembers, cm@id != n@id) {
-				int t = 1;
-				m = normalizeAST(n);
-				if (m !:= normalizeAST(cm)) {
-					t = 2;
+				int t = 0;
+				ncm = normalizeAST(cm);
+				normalizedNode = normalizeAST(n);
+				
+				if (ncm := normalizedNode) {
+				 	t = 2;
 				}
 				
-				append(("id": cm@id, "type": t));
+				if (cm := n) {
+					t = 1;
+				}
+				if (t>0) append(("id": cm@id, "type": t));
 				
 			}
 			
@@ -161,7 +167,7 @@ public bool isSubTree(node n, set[node] p) {
 
 public list[node] subTrees(node d, int threshold) {
 	list[node] subtrees = [];	
-	println("Proccessing file...<d.src>");
+
 	visit(d) {
 		case node n:  {
 			if (n.src?) {
@@ -182,7 +188,8 @@ public list[node] subTrees(node d, int threshold) {
 			}
 		}
 	}
-	println("Done proccessing file...");
+	//println("Done proccessing file...");
+	//println("Proccessing file...<d.src>");
 
 	return subtrees;
 }
@@ -217,13 +224,44 @@ public int hashFast (node d) {
 
 
 
-@memo
+public tuple[int, map[str, int]] varIndex(str name, map[str, int] seen) {
+		if (name notin seen) {
+			 seen[name] = size(domain(seen));
+		} 
+		
+		return <seen[name], seen>;
+}
+
 public node normalizeAST(node n) {
+	return normalizeAST(n, false);
+}
+@memo
+public node normalizeAST(node n, bool consistent) {
+	
+	map[str, int] seen = ();
+	
+	str renameStr(str name, str prefix)  {
+		str nameReturn = name;
+		if (consistent) {
+			tuple[int, map[str, int]] varName = varIndex(name, seen);
+			seen = varName[1];
+		 	nameReturn = "<prefix><varName[0]>";
+		}
+		return nameReturn;
+	};
+	
 	
 	node nir = visit (n) {
-	case \simpleName(str name) => \simpleName("id1")
-	case \variable(str name, int extraDimensions) => variable("id1", extraDimensions)
-	case \variable(str name, int extraDimensions, Expression \initializer) => variable("id1", extraDimensions, \initializer)
+	case \simpleName(str name) =>{
+	 \simpleName("<renameStr(name, "id")>");
+	 }
+	case \variable(str name, int extraDimensions) => {
+		variable("<renameStr(name, "id")>", extraDimensions);
+	}
+	case \variable(str name, int extraDimensions, Expression \initializer) => {
+
+		variable("<renameStr(name, "id")>", extraDimensions, \initializer);
+	}
 	case node m => {
 			s = unset(m);
 		

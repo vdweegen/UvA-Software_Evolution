@@ -54,7 +54,8 @@ test bool TestVarIndex4 () = varIndex("fourth", ("name":0, "second": 1, "third":
 test bool TestVarIndex5 () = varIndex("fifth", ("name":0, "second": 1, "third": 2, "fourth":3)) == <4,("name":0, "second": 1, "third": 2, "fourth":3, "fifth": 4)>;
 
 
-test bool TestNormalizeAST() = normalizeAST((\newObject(\int(), [\simpleName("Jordan"), \simpleName("Erika"), \simpleName("Jordan"), simpleName("Shawn")]))) ==  (\newObject(\int(), [\simpleName("id0"), \simpleName("id1"), \simpleName("id0"), simpleName("id2")]));
+test bool TestNormalizeAST() = normalizeAST((\newObject(\int(), [\simpleName("Jordan"), \simpleName("Erika"), \simpleName("Jordan"), simpleName("Shawn")])), true) ==  (\newObject(\int(), [\simpleName("id0"), \simpleName("id1"), \simpleName("id0"), simpleName("id2")]));
+test bool TestNormalizeAST() = normalizeAST((\newObject(\int(), [\simpleName("Jordan"), \simpleName("Erika"), \simpleName("Jordan"), simpleName("Shawn")])), false) ==  (\newObject(\int(), [\simpleName("Jordan"), \simpleName("Erika"), \simpleName("Jordan"), simpleName("Shawn")]));
 
 test bool TestSubTree() = subTrees(\simpleName("AAA")[src=|file:///|], 0) == [\simpleName("AAA")];
 test bool TestSubTree() = subTrees(\simpleName("AAA")[src=|file:///|], 0) == [\simpleName("AAA")];
