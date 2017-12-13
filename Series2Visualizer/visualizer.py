@@ -28,6 +28,7 @@ class Handler(Thread):
     def __init__(self, q, i):
         Thread.__init__(self)
         self.i = i
+        self.i.add_handler(self)
         self.q = q
         self.project = CloneProject()
         self.clean_stats()
@@ -85,33 +86,36 @@ class Handler(Thread):
         }
 
     def update_stats(self):
-        for widget in self.i.stats_frame.winfo_children():
-            widget.destroy()
-        c = Canvas(self.i.stats_frame, width=300, height=700, bg="white")
-        c.create_line(2, 0, 2, 700, fill="black")
+        try:
+            for widget in self.i.stats_frame.winfo_children():
+                widget.destroy()
+            c = Canvas(self.i.stats_frame, width=300, height=700, bg="white")
+            c.create_line(2, 0, 2, 700, fill="black")
 
-        title = Label(c,
-                      text=self.PROJECT_STATS.format(
-                          self.project.get_name(),
-                          self.project.get_location(),
-                          self.project.get_time(),
-                          self.project.get_sloc(),
-                          self.project.get_loc(),
-                          self.stats['duplines'],
-                          self.stats['duplinesp'],
-                          self.stats['numclones'],
-                          self.stats['numclonec'],
-                          self.stats['biggestc'],
-                          self.stats['biggestcc']
-                      ),
-                      width=300,
-                      height=700,
-                      anchor=N,
-                      justify=LEFT
-                      )
-        # c.itemconfig(canvas_title, text="Live Project Statistics")
-        title.pack(side=LEFT)
-        c.pack(side="top", fill="both")
+            title = Label(c,
+                          text=self.PROJECT_STATS.format(
+                              self.project.get_name(),
+                              self.project.get_location(),
+                              self.project.get_time(),
+                              self.project.get_sloc(),
+                              self.project.get_loc(),
+                              self.stats['duplines'],
+                              self.stats['duplinesp'],
+                              self.stats['numclones'],
+                              self.stats['numclonec'],
+                              self.stats['biggestc'],
+                              self.stats['biggestcc']
+                          ),
+                          width=300,
+                          height=700,
+                          anchor=N,
+                          justify=LEFT
+                          )
+            # c.itemconfig(canvas_title, text="Live Project Statistics")
+            title.pack(side=LEFT)
+            c.pack(side="top", fill="both")
+        except Exception:
+            pass
 
     def run(self):
         while True:
@@ -149,14 +153,21 @@ class Handler(Thread):
 
 
 class Interface(Thread):
+    __handler = None
     type = "treemap"  # Default is treemap
     # type = "piechart"
+
     def setType(self, type):
         self.type = type
+        if self.__handler:
+            self.__handler.draw()
 
     ABOUT_TEXT = """About
 
     Put some fancy text here."""
+
+    def add_handler(self, h):
+        self.__handler = h
 
     def About(self):
         toplevel = Toplevel()
