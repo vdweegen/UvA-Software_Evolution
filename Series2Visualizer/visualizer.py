@@ -150,6 +150,8 @@ class Handler(Thread):
                 self.draw()
             except IsADirectoryError:
                 pass
+            except Exception as e:
+                print(e)
 
 
 class Interface(Thread):
