@@ -23,7 +23,7 @@ public set[node] asts = loadAst(input);
 
 // run
 public void main()  {
-	map[int, list[map[str, value]]] classReports = detect(randomAsts);
+	map[str, list[map[str, value]]] classReports = detect(randomAsts);
 	str session = uuid().authority;
 	writeSession(|project://Series2/src/sessions| + session, classReports);
 }

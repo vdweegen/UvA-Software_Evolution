@@ -43,5 +43,9 @@ test bool TestExtractClones3() = extractClones([ A1,  A2,  A3 ]) == ();
 test bool TestExtractClones4() = extractClones([ A1, A1,  A2,  A3, A3 ]) == (1:[A1, A1], 3:[A3, A3]);
 
 test bool TestSubTree1() = isSubTree(A1, "B1"(A1))  == true;
+test bool TestSubTree2() = isSubTree(A1, "B1"("C1"(A1), A2, A3))  == true;
+test bool TestSubTree3() = isSubTree(A2, "B1"(A1))  == false;
+
+
 
 

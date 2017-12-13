@@ -29,7 +29,7 @@ anno int node @ hash;
 anno int node @ mass;
 anno int node @ bucket;
 anno loc node @ src;
-anno loc node @ id;
+anno str node @ id;
 
 /*
 	Annotate AST
@@ -59,16 +59,20 @@ public map[int, list[node]] extractClones(list[node] candidates) {
 	return res;
 }
 
-public map[int, list[map[str, value]]] createCloneReports(map[int, list[node]] clones) {
+
+
+
+
+public map[str, list[map[str, value]]] createCloneReports(map[int, list[node]] clones) {
 	// avoid subclones
 	set[node] cloneFound = {};
 	
 	list[int] idx = reverse(sort([i | i <- clones]));
 	
-	map[int, list[map[str, value]]] classReports = ();
+	map[str, list[map[str, value]]] classReports = ();
 	
 	for(x <- idx) {
-		cloneClassId = abs(uuidi());
+		cloneClassId = uid();
 		
 		list[map[str, value]] classReport = [];
 		classMembers = clones[x];
@@ -85,7 +89,7 @@ public map[int, list[map[str, value]]] createCloneReports(map[int, list[node]] c
 		
 			cloneFound += n;
 			node cleanNode = normalizeAST(n);
-			loc cloneId = n@id;
+			str cloneId = n@id;
 			
 			list[map[str, value]] pairs;
 			
@@ -114,7 +118,7 @@ public map[int, list[map[str, value]]] createCloneReports(map[int, list[node]] c
 	return classReports;
 }
 
-public map[int, list[map[str, value]]]  detect(set[node] ds) {
+public map[str, list[map[str, value]]]  detect(set[node] ds) {
 	// Extract all substrees from AST with a mass higher then threshold
 	list[node] candidates = preprocess(ds, THRESHOLD);
 	
@@ -170,7 +174,7 @@ public list[node] subTrees(node d, int threshold) {
 			 	"mass": mass,
 			 	"hash": hashValue,
 			 	"src": src,
-			 	"id": uuid()
+			 	"id": uid()
 				 ));
 			 	subtrees += s;
 			 
@@ -196,7 +200,6 @@ public int hash (node d) {
 	return sum([0,*h]);
 	
 }
-
 public int hashFast (node d) {
 	int i = 0;
 	
@@ -232,6 +235,7 @@ public node normalizeAST(node n) {
 }
 
 
+public str uid() = uuid().authority;
 
 // Fully Tested code
 public int treeMass(node n) = countNodes(n);
