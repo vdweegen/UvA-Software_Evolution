@@ -30,7 +30,9 @@ class TreeMap:
         # Classes with clones
         for cls in project.CLASSES:
             for cos in cls:
-                self.values.append(cos.get_sloc())
+                __sloc = cos.get_sloc()
+                self.values.append(__sloc)
+                self.values[0] -= __sloc
                 self.valuedetails.append(cos)
 
         # self.values.sort(reverse=False)
