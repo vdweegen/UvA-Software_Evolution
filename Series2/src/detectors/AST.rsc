@@ -9,6 +9,7 @@ import Node;
 import String;
 import List;
 import util::Math;
+import util::ValueUI;
 import util::Benchmark;
 import Type;
 import Map;
@@ -41,18 +42,29 @@ public list[node] preprocess(set[node] asts, int minimumMass) =  ([] | it + subT
 public map[list[int], list[node]] extractClones(list[node] candidates) {
 	list[list[int]] hashEntries = [ h@hash | h <- candidates];
 	
+	
+	
 	//Extract all hashes with more than 1 occurance
 	potentials = domain(rangeX(distribution(hashEntries), {1}));
 	
-     map[list[int] hash, list[node] nodes] res = ();
+	map[list[int],node]type3 = (x@hash: y| x<-candidates, y <-candidates, x != y,!isSubTree(x,y), !isSubTree(y,x), sima(x@hash, y@hash) > 0.9);
+	
+    map[list[int] hash, list[node] nodes] res = ();
 	 for (e <- candidates, e@hash in potentials) {
 	   if (res[e@hash]?) {
 	   res[e@hash] += e;
-	    
+
 	   } else {
 	   	res[e@hash] = [e];
 	   }
+	   
+	   if (e@hash in type3) {
+	   	   res[e@hash] += type3[e@hash];
+	   	 
+	   }
 	 }
+	 
+	
 	 
 	return res;
 }
@@ -74,16 +86,16 @@ public map[str, list[map[str, value]]] createCloneReports(map[list[int], list[no
 		cloneClassId = uid();
 		
 		list[map[str, value]] classReport = [];
-		classMembers = clones[x];
+		classMembersList = clones[x];
 
-		if (isSubTree(head(classMembers), cloneFound)) {
-			println("<head(classMembers)@hash> is subclone discarding class");
+		if (isSubTree(head(classMembersList), cloneFound)) {
+			println("<head(classMembersList)@hash> is subclone discarding class");
 			continue;
 		}
 		
 		map[loc id, map[str, value] clone] cloneCache = ();
 		
-		
+		classMembers = toSet(classMembersList);
 		for(n <- classMembers) {
 		
 			cloneFound += n;
@@ -91,6 +103,9 @@ public map[str, list[map[str, value]]] createCloneReports(map[list[int], list[no
 			str cloneId = n@id;
 			
 			list[map[str, value]] pairs;
+			
+			m = normalizeAST(n);
+			m2 = normalizeASTType2(n);
 			
 			pairs = for(cm <- classMembers, cm@id != n@id) {
 				//int t = 1;
@@ -104,16 +119,25 @@ public map[str, list[map[str, value]]] createCloneReports(map[list[int], list[no
 				//if (cm := n) {
 				//	t = 1;
 				//}
-				int t = 1;
-				m = normalizeAST(n);
-				if (m !:= normalizeAST(cm)) {
+				//println(sima(n@hash, cm@hash));
+				int t = 3;
+				
+				
+				
+				//println("Type 1 <n := cm>");
+				//println("Type 2 <m := normalizeAST(cm)>");
+				if (m := cm) {
+					t = 1;
+				}else if (m2 := normalizeASTType2(cm)) {
 					t = 2;
 				}
+				
+			
 				if (t>0) append(("id": cm@id, "type": t));
 				
 			}
 			
-			println(pairs);
+			//println(pairs);
 			str source = readFile(n@src);
 			volumeMetrics = volume(source);
 			
@@ -213,22 +237,6 @@ public list[node] subTrees(node d, int threshold) {
 //Similarity = 2 x S / (2 x S + L + R)
 real sima(list[int] a, list[int] b) = toReal(2 * size(a & b))/(size(b - a) + size(a - b) + (2 * size(a & b)));
 
-public lrel[str src, int mass, list[int] hash, str uuid, node \node] subTreesFast(node d, int threshold) {
-	
-	lrel[str src, int mass, list[int] hash, str uuid, node \node] subtrees = [];	
-     subtrees = for(/node n := d, n.src?) {
-	 	 int mass = fastCount(n);
-	 	 if (mass >= threshold) {
-	 	  	str src = "<n.src>";
-	 	    list[int] h = hashFast(n);
-	 	 //	append(<src, 0, hashFast(n), uid(), n>);
-	 	 }
-	 	
-     }
-
-	return subtrees;
-}
-
 
 @memo
 public int hash (node d) {
@@ -303,34 +311,6 @@ public list[int] hashFast (node d, map[str, int] seen) {
 	
 }
 
-//public list[int] hashFast (node d) {
-//	int p = 107;
-//	list[int] i = [];
-//	
-//	
-//	int tokenId(str name)  {
-//		tuple[int, map[str, int]] varName = varIndex(name, seen);
-//		seen = varName[1];
-//		return varName[0];
-//	};
-//	
-//	visit(d) {
-//		case \Declaration n: {
-//			i += tokenId(getName(n));
-//		}
-//		case \Statement n:{
-//			i += tokenId(getName(n));
-//		}
-//		case \Expression n:{
-//			i += tokenId(getName(n));
-//		}
-//	}
-//	
-//	return i;
-//	
-//	
-//}
-
 
 
 public tuple[int, map[str, int]] varIndex(str name, map[str, int] seen) {
@@ -343,6 +323,42 @@ public tuple[int, map[str, int]] varIndex(str name, map[str, int] seen) {
 
 public node normalizeAST(node n) {
 	return normalizeAST(n, false);
+}
+public node normalizeASTType2(node n) {
+	node nir = visit (n) {
+	case \simpleName(str name) =>{
+	 \simpleName("");
+	 }
+	case \variable(str name, int extraDimensions) => {
+		variable("", extraDimensions);
+	}
+	case \variable(str name, int extraDimensions, Expression \initializer) => {
+
+		variable("", extraDimensions, \initializer);
+	} 
+	case \method(\Type \return, str name, list[\Declaration] parameters, list[\Expression] exceptions, \Statement impl)  => {
+		\method(\return, "", parameters,  exceptions, impl);
+	}
+	case \method(\Type \return, str name, list[\Declaration] parameters, list[\Expression] exceptions)  => {
+		\method(\return, "", parameters,  exceptions);
+	}
+	case \typeParameter(str name, list[Type] extendsList) => {
+		\typeParameter("", extendsList);
+	}
+	case \parameter(Type \type, str name, int extraDimensions)=> {
+		\parameter(\type, "", extraDimensions);
+	}
+	
+	
+
+	case node m => {
+			s = unset(m);
+		
+		}
+	};
+	
+	//iprint(nir);
+	return nir;
 }
 @memo
 public node normalizeAST(node n, bool consistent) {
@@ -370,6 +386,12 @@ public node normalizeAST(node n, bool consistent) {
 	case \variable(str name, int extraDimensions, Expression \initializer) => {
 
 		variable("<renameStr(name, "id")>", extraDimensions, \initializer);
+	}
+	case \method(\Type \return, str name, list[\Declaration] parameters, list[\Expression] exceptions, \Statement impl)  => {
+		\method(\return, "<renameStr(name, "id")>", parameters,  exceptions, impl);
+	}
+	case \method(\Type \return, str name, list[\Declaration] parameters, list[\Expression] exceptions)  => {
+		\method(\return, "<renameStr(name, "id")>", parameters,  exceptions);
 	}
 	case node m => {
 			s = unset(m);
