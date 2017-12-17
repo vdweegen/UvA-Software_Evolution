@@ -47,6 +47,10 @@ class Handler(Thread):
             t = TreeMap()
         elif self.i.type == "treemap2":
             t = TreeMap(True)
+        elif self.i.type == "treemap3":
+            t = TreeMap(False, True)
+        elif self.i.type == "treemap4":
+            t = TreeMap(True, True)
         elif self.i.type == "hdg":
             pass
         elif self.i.type == "scatter":
@@ -198,6 +202,10 @@ class Interface(Thread):
                                            command=lambda: self.setType("treemap"))
         self.visualizationmenu.add_command(label="Treemap (clones only)",
                                            command=lambda: self.setType("treemap2"))
+        self.visualizationmenu.add_command(label="Treemap (color per clone)",
+                                           command=lambda: self.setType("treemap3"))
+        self.visualizationmenu.add_command(label="Treemap (clones only, color per clone)",
+                                           command=lambda: self.setType("treemap4"))
         self.visualizationmenu.add_command(label="Piechart",
                                            command=lambda: self.setType("piechart"))
         # self.visualizationmenu.add_command(label="Scatterplot",

@@ -9,14 +9,17 @@ class TreeMap:
     valuedetails = None
     colors = None
 
-    def __init__(self, skip_initial = False):
+    def __init__(self, skip_initial=False, color_per_clone=False):
         self.height = 700
         self.width = 700
         self.y = 0
         self.x = 0
         self.values = []
+        if color_per_clone:
+            self.types = []
         self.valuedetails = []
         self.__skip_initial = skip_initial
+        self.__color_per_clone = color_per_clone
 
     def get_colors(self, N):
         HSV_tuples = [(x * 1.0 / N, 0.5, 0.5) for x in range(N)]
@@ -26,16 +29,28 @@ class TreeMap:
             hex_out.append('#%02x%02x%02x' % tuple(rgb))
         return hex_out
 
+    def get_type_color(self, t=0):
+        if t == 1:
+            return "blue"
+        if t == 2:
+            return "yellow"
+        if t == 3:
+            return "red"
+        return "green"
+
     def vals(self, project):
         if not self.__skip_initial:
             self.values = [project.get_sloc()]
             self.valuedetails = [None]
+            self.types = [None]
 
         # Classes with clones
         for cls in project.CLASSES:
             for cos in cls:
                 __sloc = cos.get_sloc()
                 self.values.append(__sloc)
+                if self.__color_per_clone:
+                    self.types.append(cos.get_type())
                 if not self.__skip_initial:
                     self.values[0] -= __sloc
                 self.valuedetails.append(cos)
@@ -131,7 +146,7 @@ class TreeMap:
                 i["y"],
                 i["x"]+i["dx"],
                 i["y"]+i["dy"],
-                fill=self.colors[j],
+                fill=self.colors[j] if not self.__color_per_clone else self.get_type_color(self.types[j]),
                 tags="rectangle-{}".format(j))
             c.tag_bind('rectangle-{}'.format(j),
                        '<ButtonPress-1>',
