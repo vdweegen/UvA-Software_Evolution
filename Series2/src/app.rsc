@@ -62,7 +62,7 @@ public void runAsync()  {
 	writeJSON((|project://Series2/src/sessions| + session) + "metadata.json", ("sloc": volumeMetrics["source_lines"], "loc": volumeMetrics["total_lines"], "project": session, "location": inputFile, "time": time2str(now())));
 	
 	println("Session name <session>");
-	detectAsync(smast, session);
+	detectAsync(smast, session, threshold, type3);
 	println("Session  <session> Done");
 	
 	println("Time taken <createDuration(startTime, now())>");
@@ -70,11 +70,3 @@ public void runAsync()  {
 
 
 
-public void detectAsync(set[node] ds, str session) {
-	// Extract all substrees from AST with a mass higher then threshold
-	list[node] candidates = preprocess(ds, threshold);
-	
-	map[list[int], list[node]] clones = extractClones(candidates, type3);
-		
-	createCloneAsync(clones, session);
-}

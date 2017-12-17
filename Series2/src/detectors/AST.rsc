@@ -290,6 +290,15 @@ public map[str, list[map[str, value]]]  detect(set[node] ds, int threshold, bool
 
 } 
 
+public void detectAsync(set[node] ds, str session, int threshold, bool type3) {
+	// Extract all substrees from AST with a mass higher then threshold
+	list[node] candidates = preprocess(ds, threshold);
+	
+	map[list[int], list[node]] clones = extractClones(candidates, type3);
+		
+	createCloneAsync(clones, session);
+}
+
 
 @memo
 public bool isSubTree(node n, node p) {
