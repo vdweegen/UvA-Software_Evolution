@@ -31,12 +31,12 @@ class TreeMap:
 
     def get_type_color(self, t=0):
         if t == 1:
-            return "green"
-        if t == 2:
             return "blue"
+        if t == 2:
+            return "yellow"
         if t == 3:
             return "red"
-        return "black"
+        return "green"
 
     def vals(self, project):
         if not self.__skip_initial:
