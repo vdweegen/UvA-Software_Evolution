@@ -62,7 +62,7 @@ public map[list[int], list[node]] extractClones(list[node] candidates, bool with
 				  if (!(tc@hash > schash) && !(tc@hash < schash)) {
 				   sim = similarity(tc@hash, schash);
 				   if (0.95 < sim) {
-				     seen += {tc};
+				    
 				   	 cacheSima[<schash, tc@hash>] = [sc, tc];
 				  	 cacheSima[<tc@hash, schash>] = [];
 				   } else {
