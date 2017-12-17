@@ -38,6 +38,8 @@ public set[node] loadAst(loc file) = {createAstFromFile(file, false)};
 
 public list[node] preprocess(set[node] asts, int minimumMass) =  ([] | it + subTrees(ast, minimumMass) |  ast <- asts);
 public set[list[int]]  potentialType3 = {};
+
+public map[list[int], list[node]] extractClones(list[node] candidates) = extractClones(candidates, false);
 // clones indexed by hash
 public map[list[int], list[node]] extractClones(list[node] candidates, bool withType3) {
 	list[list[int]] hashEntries = [ h@hash | h <- candidates];
@@ -46,9 +48,7 @@ public map[list[int], list[node]] extractClones(list[node] candidates, bool with
 	
 	//Extract all hashes with more than 1 occurance
 	potentials = domain(rangeX(distribution(hashEntries), {1}));
-	println("calculating sim");
-	map[list[int],list[node]] type3 = ();
-	
+
 	map[tuple[list[int], list[int]], list[node]] cacheSima = (); 
 	
 	println("size <size(candidates)> - <size(dup(candidates))>");
@@ -60,8 +60,8 @@ public map[list[int], list[node]] extractClones(list[node] candidates, bool with
 			  compareWith = [z|z <- candidates, <z@hash, schash> notin cacheSima, (z@mass - scmass) < 10 && (z@mass - scmass) > -10, z@hash != schash];
 			   
 			  for(tc <-compareWith ) {
-				  if (!(tc@hash > schash) && !(schash < tc@hash)) {
-				   sim = sima(tc@hash, sc@hash);
+				  if (!(tc@hash > schash) && !(tc@hash < schash)) {
+				   sim = similarity(tc@hash, sc@hash);
 				   if (0.95 < sim) {
 				   	 cacheSima[<schash, tc@hash>] = [sc, tc];
 				  	 cacheSima[<tc@hash, schash>] = [];
@@ -84,9 +84,6 @@ public map[list[int], list[node]] extractClones(list[node] candidates, bool with
 	potentialType3 = domain(domain(rangeX(cacheSima, {[]})));
 	rel[list[int], list[int]] potentialType3Map = domain(rangeX(cacheSima, {[]}));
 	
-	
-	println("Type 3 are <size(potentialType3)>");
-	println("Done calculating sim");
     map[list[int] hash, list[node] nodes] res = ();
 	 for (e <- candidates, e@hash in potentials) {
 	   if (res[e@hash]?) {
@@ -97,13 +94,15 @@ public map[list[int], list[node]] extractClones(list[node] candidates, bool with
 	   }
 	   
 	 }
-	 
+	
+	
+	  // Prefix type 3 with 100	 
 	  for (e <- rangeX(cacheSima, {[]})) {
 	
 		  res[[-1,0,0] + e[0] + e[1]] = cacheSima[e];
 	  }
 	  
-	  println("done extracting");
+
 	 
 	return res;
 }
@@ -114,7 +113,11 @@ public bool sortHash (list[int] a, list[int] b)  {
 	if (size(a) == size(b)) {
 		return toInt(intercalate("",a)) < toInt(intercalate("",b));
 	} else {
-		return size(a) < size(b);
+		if (a[1] == 0 || b[1] == 0) {
+			return toInt(intercalate("",a)) < toInt(intercalate("",b));
+		} else {
+			return size(a) < size(b);
+		}
 	}
 	
 } 
@@ -122,10 +125,10 @@ public bool sortHash (list[int] a, list[int] b)  {
 public map[str, list[map[str, value]]] createCloneReports(map[list[int], list[node]] clones) {
 	// avoid subclones
 	set[node] cloneFound = {};
-	println("Starting createclonereport");
+
 	list[list[int]] idx = reverse(sort([i | i <- clones], sortHash));
 	
-	println("done sorting createclonereport");
+	
 	map[str, list[map[str, value]]] classReports = ();
 	
 	for(x <- idx) {
@@ -138,7 +141,6 @@ public map[str, list[map[str, value]]] createCloneReports(map[list[int], list[no
 		
 		isType3Class = x[0..3] == [-1,0,0];
 		if  (!isType3Class && isSubTree(firstMember, cloneFound)) {
-			println("<firstMember@hash[0..3]> is subclone discarding class");
 			continue;
 		}
 		
@@ -157,8 +159,7 @@ public map[str, list[map[str, value]]] createCloneReports(map[list[int], list[no
 			list[map[str, value]] pairs;
 			
 			m = normalizeAST(n);
-			//m2 = normalizeASTType2(n);
-			
+
 			pairs = for(cm <- classMembers, cm@id != n@id) {
 
 				int t = 2;
@@ -166,17 +167,13 @@ public map[str, list[map[str, value]]] createCloneReports(map[list[int], list[no
 					if (m := cm) {
 						t = 1;
 					}
-					//}else if (m2 := normalizeASTType2(cm)) {
-					//	t = 2;
-					//}
-				
 					append(("id": cm@id, "type": t));
 				} else {
 					append(("id": cm@id, "type": 3));
 				}
 			}
 			
-			//println(pairs);
+			
 			str source = readFile(n@src);
 			volumeMetrics = volume(source);
 			
@@ -213,25 +210,6 @@ public map[str, list[map[str, value]]]  detect(set[node] ds) {
 } 
 
 
-public void run(set[node] ds) {
-	startTime = realTime();
-	// Extract all substrees from AST with a mass higher then threshold
-	list[node] candidates = preprocess(ds, THRESHOLD);
-	
-	//map[int, list[node]] clones = extractClones(candidates);
-	//	
-	//classReports = createCloneReports(clones);
-	
-	
-	//for(x <- classReports) {
-	//	println(x);
-	//	writeJSON(|file:///c:/py/aFolder| + ("<x>.json"), classReports[x]);
-	//}
-
-	println("Time taken <realTime() - startTime>");
-	
-}
-
 @memo
 public bool isSubTree(node n, node p) {
 	return /n := p;
@@ -242,12 +220,10 @@ public bool isSubTree(node n, set[node] p) {
 }
 
 
-
-
 public list[node] subTrees(node d, int threshold) {
 	list[node] subtrees = [];	
 
-	bottom-up visit(d) {
+	top-down visit(d) {
 		case node n:  {
 			if (n.src?) {
 			 
@@ -269,14 +245,12 @@ public list[node] subTrees(node d, int threshold) {
 			}
 		}
 	}
-	//println("Done proccessing file...");
-	//println("Proccessing file...<d.src>");
 
 	return subtrees;
 }
 //Similarity = 2 x S / (2 x S + L + R)
 @memo
-real sima(list[int] a, list[int] b)  {
+real similarity(list[int] a, list[int] b)  {
 	sharedNodes = a & b;
 	differentNodesA = a-b;
 	differentNodesB = b-a;
