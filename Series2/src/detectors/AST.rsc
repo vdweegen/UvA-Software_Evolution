@@ -19,11 +19,11 @@ import metrics::Volume;
 
 //import lang::java::m3::AST;
 import ListRelation;
+import Relation;
 
 
 
-
-public int THRESHOLD = 20;
+public int THRESHOLD = 30;
 anno list[int] node @ hash;
 anno int node @ mass;
 anno int node @ bucket;
@@ -37,18 +37,56 @@ anno str node @ id;
 public set[node] loadAst(loc file) = {createAstFromFile(file, false)};
 
 public list[node] preprocess(set[node] asts, int minimumMass) =  ([] | it + subTrees(ast, minimumMass) |  ast <- asts);
-
+public set[list[int]]  potentialType3 = {};
 // clones indexed by hash
-public map[list[int], list[node]] extractClones(list[node] candidates) {
+public map[list[int], list[node]] extractClones(list[node] candidates, bool withType3) {
 	list[list[int]] hashEntries = [ h@hash | h <- candidates];
 	
 	
 	
 	//Extract all hashes with more than 1 occurance
 	potentials = domain(rangeX(distribution(hashEntries), {1}));
+	println("calculating sim");
+	map[list[int],list[node]] type3 = ();
 	
-	map[list[int],node]type3 = (x@hash: y| x<-candidates, y <-candidates, x != y,!isSubTree(x,y), !isSubTree(y,x), sima(x@hash, y@hash) > 0.9);
+	map[tuple[list[int], list[int]], list[node]] cacheSima = (); 
 	
+	println("size <size(candidates)> - <size(dup(candidates))>");
+	if (withType3) {
+			for(sc <- candidates ) {
+			  scmass = sc@mass;
+			  schash = sc@hash;
+			    
+			  compareWith = [z|z <- candidates, <z@hash, schash> notin cacheSima, (z@mass - scmass) < 10 && (z@mass - scmass) > -10, z@hash != schash];
+			   
+			  for(tc <-compareWith ) {
+				  if (!(tc@hash > schash) && !(schash < tc@hash)) {
+				   sim = sima(tc@hash, sc@hash);
+				   if (0.95 < sim) {
+				   	 cacheSima[<schash, tc@hash>] = [sc, tc];
+				  	 cacheSima[<tc@hash, schash>] = [];
+				   } else {
+				  	 cacheSima[<schash, tc@hash>] = [];
+				   	 cacheSima[<tc@hash, schash>] = [];
+				   }
+				  
+				  } else {
+				   cacheSima[<schash, tc@hash>] = [];
+				   cacheSima[<tc@hash, schash>] = [];
+			  	  }
+			  
+			  }
+			  
+		
+		}
+	}
+
+	potentialType3 = domain(domain(rangeX(cacheSima, {[]})));
+	rel[list[int], list[int]] potentialType3Map = domain(rangeX(cacheSima, {[]}));
+	
+	
+	println("Type 3 are <size(potentialType3)>");
+	println("Done calculating sim");
     map[list[int] hash, list[node] nodes] res = ();
 	 for (e <- candidates, e@hash in potentials) {
 	   if (res[e@hash]?) {
@@ -58,28 +96,36 @@ public map[list[int], list[node]] extractClones(list[node] candidates) {
 	   	res[e@hash] = [e];
 	   }
 	   
-	   if (e@hash in type3) {
-	   	   res[e@hash] += type3[e@hash];
-	   	 
-	   }
 	 }
 	 
+	  for (e <- rangeX(cacheSima, {[]})) {
 	
+		  res[[-1,0,0] + e[0] + e[1]] = cacheSima[e];
+	  }
+	  
+	  println("done extracting");
 	 
 	return res;
 }
 
 
-
-public bool sortHash (list[int] a, list[int] b) = toInt(intercalate("",a)) < toInt(intercalate("",b));
+@memo
+public bool sortHash (list[int] a, list[int] b)  {
+	if (size(a) == size(b)) {
+		return toInt(intercalate("",a)) < toInt(intercalate("",b));
+	} else {
+		return size(a) < size(b);
+	}
+	
+} 
 
 public map[str, list[map[str, value]]] createCloneReports(map[list[int], list[node]] clones) {
 	// avoid subclones
 	set[node] cloneFound = {};
-	
+	println("Starting createclonereport");
 	list[list[int]] idx = reverse(sort([i | i <- clones], sortHash));
-
 	
+	println("done sorting createclonereport");
 	map[str, list[map[str, value]]] classReports = ();
 	
 	for(x <- idx) {
@@ -88,16 +134,22 @@ public map[str, list[map[str, value]]] createCloneReports(map[list[int], list[no
 		list[map[str, value]] classReport = [];
 		classMembersList = clones[x];
 
-		if (isSubTree(head(classMembersList), cloneFound)) {
-			println("<head(classMembersList)@hash> is subclone discarding class");
+		firstMember = classMembersList[0];
+		
+		isType3Class = x[0..3] == [-1,0,0];
+		if  (!isType3Class && isSubTree(firstMember, cloneFound)) {
+			println("<firstMember@hash[0..3]> is subclone discarding class");
 			continue;
 		}
 		
 		map[loc id, map[str, value] clone] cloneCache = ();
 		
-		classMembers = toSet(classMembersList);
-		for(n <- classMembers) {
+		set[node] classMembers = toSet(classMembersList);
+		set[node] toSkip = {};
 		
+	
+		for(n <- classMembers) {
+			
 			cloneFound += n;
 			node cleanNode = normalizeAST(n);
 			str cloneId = n@id;
@@ -105,36 +157,23 @@ public map[str, list[map[str, value]]] createCloneReports(map[list[int], list[no
 			list[map[str, value]] pairs;
 			
 			m = normalizeAST(n);
-			m2 = normalizeASTType2(n);
+			//m2 = normalizeASTType2(n);
 			
 			pairs = for(cm <- classMembers, cm@id != n@id) {
-				//int t = 1;
-				//ncm = normalizeAST(cm);
-				//normalizedNode = normalizeAST(n);
-				//
-				//if (ncm := normalizedNode) {
-				// 	t = 2;
-				//}
-				//
-				//if (cm := n) {
-				//	t = 1;
-				//}
-				//println(sima(n@hash, cm@hash));
-				int t = 3;
+
+				int t = 2;
+				if (!isType3Class) {
+					if (m := cm) {
+						t = 1;
+					}
+					//}else if (m2 := normalizeASTType2(cm)) {
+					//	t = 2;
+					//}
 				
-				
-				
-				//println("Type 1 <n := cm>");
-				//println("Type 2 <m := normalizeAST(cm)>");
-				if (m := cm) {
-					t = 1;
-				}else if (m2 := normalizeASTType2(cm)) {
-					t = 2;
+					append(("id": cm@id, "type": t));
+				} else {
+					append(("id": cm@id, "type": 3));
 				}
-				
-			
-				if (t>0) append(("id": cm@id, "type": t));
-				
 			}
 			
 			//println(pairs);
@@ -150,6 +189,7 @@ public map[str, list[map[str, value]]] createCloneReports(map[list[int], list[no
 				"offset": [n@src.offset, n@src.length]
 			)
 			, "src": n@src, "id": n@id, "pairs": pairs);
+			
 			classReport += cloneInfo;
 	
 			
@@ -165,7 +205,7 @@ public map[str, list[map[str, value]]]  detect(set[node] ds) {
 	// Extract all substrees from AST with a mass higher then threshold
 	list[node] candidates = preprocess(ds, THRESHOLD);
 	
-	map[list[int], list[node]] clones = extractClones(candidates);
+	map[list[int], list[node]] clones = extractClones(candidates, false);
 		
 	classReports = createCloneReports(clones);
 	return classReports;
@@ -192,11 +232,11 @@ public void run(set[node] ds) {
 	
 }
 
-
+@memo
 public bool isSubTree(node n, node p) {
 	return /n := p;
 }
-
+@memo
 public bool isSubTree(node n, set[node] p) {
 	return /n := p;
 }
@@ -235,7 +275,15 @@ public list[node] subTrees(node d, int threshold) {
 	return subtrees;
 }
 //Similarity = 2 x S / (2 x S + L + R)
-real sima(list[int] a, list[int] b) = toReal(2 * size(a & b))/(size(b - a) + size(a - b) + (2 * size(a & b)));
+@memo
+real sima(list[int] a, list[int] b)  {
+	sharedNodes = a & b;
+	differentNodesA = a-b;
+	differentNodesB = b-a;
+	real sizeShared = 2.0 * size(sharedNodes);
+	
+	return sizeShared/(size(differentNodesA) + size(differentNodesB) + sizeShared);
+}
 
 
 @memo
@@ -257,7 +305,6 @@ public int nodeToCode(node n) = (0 | it + x | x <- chars(getName(n)));
 public map[str, int] seen = ("notNull":0);
 @memo
 public list[int] hashFast (node d) {
-	int p = 107;
 	list[int] i = [];
 	
 	
@@ -320,10 +367,11 @@ public tuple[int, map[str, int]] varIndex(str name, map[str, int] seen) {
 		
 		return <seen[name], seen>;
 }
-
+@memo
 public node normalizeAST(node n) {
 	return normalizeAST(n, false);
 }
+@memo
 public node normalizeASTType2(node n) {
 	node nir = visit (n) {
 	case \simpleName(str name) =>{
@@ -393,6 +441,12 @@ public node normalizeAST(node n, bool consistent) {
 	case \method(\Type \return, str name, list[\Declaration] parameters, list[\Expression] exceptions)  => {
 		\method(\return, "<renameStr(name, "id")>", parameters,  exceptions);
 	}
+	case \typeParameter(str name, list[Type] extendsList) => {
+		\typeParameter("<renameStr(name, "id")>", extendsList);
+	}
+	case \parameter(Type \type, str name, int extraDimensions)=> {
+		\parameter(\type, "<renameStr(name, "id")>", extraDimensions);
+	}
 	case node m => {
 			s = unset(m);
 		
@@ -407,7 +461,7 @@ public node normalizeAST(node n, bool consistent) {
 public str uid() = uuid().authority;
 
 // Fully Tested code
-
+@memo
 public int treeMass(node n) = fastCount(n);
 
 public int countNodes(node d) {
@@ -440,7 +494,7 @@ public int fastCount(node d) {
 	}
 	return size(i);
 }
-
+@memo
 public node unsetNodes(node n) = unsetRec(n); 
 
 public list[loc] a (node d) {
