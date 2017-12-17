@@ -3,6 +3,7 @@ module app
 import util::UUID;
 import util::Math;
 import util::IO;
+import util::Date;
 import IO;
 import util::FileSystem;
 import String;
@@ -21,14 +22,11 @@ import DateTime;
 // set output folder
 public loc output =  |project://Series2/src/sessions/| + "<abs(uuidi())>";
 
-public str time2str(datetime d) {
-	return "<d.year>-<right("<d.month>", 2,"0")>-<right("<d.day>", 2,"0")>T<right("<d.hour>", 2,"0")>:<right("<d.minute>", 2,"0")>:<right("<d.second>", 2,"0")>.<right("<d.millisecond>", 3,"0")>Z";
-}
 
 
 //Settings
 bool type3 = false;
-int threshold = 50;
+int threshold = 30;
 public loc inputFile = |project://smallsql0.21_src|;
 
 
