@@ -54,11 +54,15 @@ public map[list[int], list[node]] extractClones(list[node] candidates, bool with
 			  schash = sc@hash;
 			    
 			  compareWith = [z|z <- candidates, <z@hash, schash> notin cacheSima, (z@mass - scmass) < 10 && (z@mass - scmass) > -10, z@hash != schash];
-			   
+			  
+			
+			  
+			  
 			  for(tc <-compareWith ) {
 				  if (!(tc@hash > schash) && !(tc@hash < schash)) {
-				   sim = similarity(tc@hash, sc@hash);
+				   sim = similarity(tc@hash, schash);
 				   if (0.95 < sim) {
+				     seen += {tc};
 				   	 cacheSima[<schash, tc@hash>] = [sc, tc];
 				  	 cacheSima[<tc@hash, schash>] = [];
 				   } else {
@@ -94,8 +98,15 @@ public map[list[int], list[node]] extractClones(list[node] candidates, bool with
 	
 	  // Prefix type 3 with 100	 
 	  for (e <- rangeX(cacheSima, {[]})) {
-	
-		  res[[-1,0,0] + e[0]] = cacheSima[e];
+		
+		  list[int] hashId = [-1,0,0] + (size(e[0]) < size(e[1]) ?e[0] : e[1]);
+		 
+		   if (res[hashId]?) {
+	  		 res[hashId] += cacheSima[e];
+
+	  	 	} else {
+	   	 		res[hashId] = cacheSima[e];
+	   		}
 	  }
 	  
 
@@ -135,10 +146,15 @@ public map[str, list[map[str, value]]] createCloneReports(map[list[int], list[no
 
 		firstMember = classMembersList[0];
 		
+		
 		isType3Class = x[0..3] == [-1,0,0];
+		
 		if  (!isType3Class && isSubTree(firstMember, cloneFound)) {
 			continue;
 		}
+	
+		
+		
 		
 		map[loc id, map[str, value] clone] cloneCache = ();
 		
@@ -147,7 +163,10 @@ public map[str, list[map[str, value]]] createCloneReports(map[list[int], list[no
 		
 	
 		for(n <- classMembers) {
-			
+				
+			if (isType3Class && isSubTree(n, classMembers - n )) {
+				continue;
+			}
 			cloneFound += n;
 			node cleanNode = normalizeAST(n);
 			str cloneId = n@id;
