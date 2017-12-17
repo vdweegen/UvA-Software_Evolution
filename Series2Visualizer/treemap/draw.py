@@ -99,7 +99,9 @@ class TreeMap:
         Row:       {}
         Column:    {}
         Offset:    {}
+        
     Fragment:
+    
     {}
     """
 
@@ -108,10 +110,14 @@ class TreeMap:
     of non-duplicated code).
     """
 
+    def format_long_fragment(self, fragment):
+        return fragment[:200] + (fragment[200:] and '\n====== OUTPUT TRUNCATED ======')
+
     def show_details(self, index):
         toplevel = Toplevel()
         clone = self.valuedetails[index]
         if clone:
+            __fragment = clone.CLONE["fragment"]
             text = self.CLONE_DETAILS.format(
                            clone.CLONE["id"],
                            clone.CLONE["clone_class"],
@@ -123,7 +129,7 @@ class TreeMap:
                            clone.CLONE["location"]["row"],
                            clone.CLONE["location"]["column"],
                            clone.CLONE["location"]["offset"],
-                           clone.CLONE["fragment"]
+                           self.format_long_fragment(__fragment)
                        )
         else:
             text = self.PROJECT_DETAILS
