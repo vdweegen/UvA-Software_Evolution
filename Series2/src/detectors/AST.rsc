@@ -21,9 +21,6 @@ import metrics::Volume;
 import ListRelation;
 import Relation;
 
-
-
-public int THRESHOLD = 30;
 anno list[int] node @ hash;
 anno int node @ mass;
 anno int node @ bucket;
@@ -51,7 +48,6 @@ public map[list[int], list[node]] extractClones(list[node] candidates, bool with
 
 	map[tuple[list[int], list[int]], list[node]] cacheSima = (); 
 	
-	println("size <size(candidates)> - <size(dup(candidates))>");
 	if (withType3) {
 			for(sc <- candidates ) {
 			  scmass = sc@mass;
@@ -99,7 +95,7 @@ public map[list[int], list[node]] extractClones(list[node] candidates, bool with
 	  // Prefix type 3 with 100	 
 	  for (e <- rangeX(cacheSima, {[]})) {
 	
-		  res[[-1,0,0] + e[0] + e[1]] = cacheSima[e];
+		  res[[-1,0,0] + e[0]] = cacheSima[e];
 	  }
 	  
 
@@ -198,11 +194,96 @@ public map[str, list[map[str, value]]] createCloneReports(map[list[int], list[no
 	return classReports;
 }
 
-public map[str, list[map[str, value]]]  detect(set[node] ds) {
-	// Extract all substrees from AST with a mass higher then threshold
-	list[node] candidates = preprocess(ds, THRESHOLD);
+
+public map[str, list[map[str, value]]] createCloneAsync(map[list[int], list[node]] clones, str session) {
+	// avoid subclones
+	set[node] cloneFound = {};
+
+	list[list[int]] idx = reverse(sort([i | i <- clones], sortHash));
 	
-	map[list[int], list[node]] clones = extractClones(candidates, false);
+	
+	map[str, list[map[str, value]]] classReports = ();
+	
+	for(x <- idx) {
+		cloneClassId = uid();
+		
+		list[map[str, value]] classReport = [];
+		classMembersList = clones[x];
+
+		firstMember = classMembersList[0];
+		
+		isType3Class = x[0..3] == [-1,0,0];
+		if  (!isType3Class && isSubTree(firstMember, cloneFound)) {
+			continue;
+		}
+		
+		map[loc id, map[str, value] clone] cloneCache = ();
+		
+		set[node] classMembers = toSet(classMembersList);
+		set[node] toSkip = {};
+		
+	
+		for(n <- classMembers) {
+			
+			cloneFound += n;
+			node cleanNode = normalizeAST(n);
+			str cloneId = n@id;
+			
+			list[map[str, value]] pairs;
+			
+			m = normalizeAST(n);
+
+			pairs = for(cm <- classMembers, cm@id != n@id) {
+
+				int t = 2;
+				if (!isType3Class) {
+					if (m := cm) {
+						t = 1;
+					}
+					append(("id": cm@id, "type": t));
+				} else {
+					append(("id": cm@id, "type": 3));
+				}
+			}
+			
+			
+			str source = readFile(n@src);
+			volumeMetrics = volume(source);
+			
+			cloneInfo = ("clone_class" : cloneClassId, "fragment": readFile(n@src), "metadata": 
+			("sloc": volumeMetrics["source_lines"], "length": volumeMetrics["total_lines"], "mass": n@mass),
+			"location": (
+				"file":"<n@src.authority><n@src.path>",
+				"row": n@src.begin.line,
+				"column": n@src.begin.column,
+				"offset": [n@src.offset, n@src.length]
+			)
+			, "src": n@src, "id": n@id, "pairs": pairs);
+			
+			classReport += cloneInfo;
+	
+			
+		}
+		
+			
+			
+			writeJSON(|project://Series2/src/sessions| + session + ("class_<cloneClassId>.json"), classReport);
+			
+				
+				
+			
+		//classReports[cloneClassId] = classReport;
+	}
+	
+	return classReports;
+}
+
+
+public map[str, list[map[str, value]]]  detect(set[node] ds, int threshold, bool type3) {
+	// Extract all substrees from AST with a mass higher then threshold
+	list[node] candidates = preprocess(ds, threshold);
+	
+	map[list[int], list[node]] clones = extractClones(candidates, type3);
 		
 	classReports = createCloneReports(clones);
 	return classReports;
