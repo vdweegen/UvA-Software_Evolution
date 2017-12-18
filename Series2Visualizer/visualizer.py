@@ -34,11 +34,6 @@ class Handler(Thread):
         self.project = CloneProject()
         self.clean_stats()
 
-    # def addText(self, t):
-    #     T = Text(self.i.frame, height=2, width=30)
-    #     T.pack()
-    #     T.insert(END, "Got: {}".format(t))
-
     def draw(self):
         for widget in self.i.frame.winfo_children():
             widget.destroy()
@@ -80,6 +75,13 @@ class Handler(Thread):
     Number of Clone Classes: {}
     Biggest Clone: {}
     Biggest Clone Class: {}
+    
+    Type #1 Clones: {}
+            Lines: {}
+    Type #2 Clones: {}
+            Lines: {}
+    Type #3 Clones: {}
+            Lines: {}
     """
 
     def clean_stats(self):
@@ -89,7 +91,13 @@ class Handler(Thread):
             'numclones': 0,
             'numclonec': 0,
             'biggestc': 0,
-            'biggestcc': 0
+            'biggestcc': 0,
+            'numtyp1': 0,
+            'numtyp1sloc': 0,
+            'numtyp2': 0,
+            'numtyp2sloc': 0,
+            'numtyp3': 0,
+            'numtyp3sloc': 0
         }
 
     def update_stats(self):
@@ -111,7 +119,13 @@ class Handler(Thread):
                               self.stats['numclones'],
                               self.stats['numclonec'],
                               self.stats['biggestc'],
-                              self.stats['biggestcc']
+                              self.stats['biggestcc'],
+                              self.stats['numtyp1'],
+                              self.stats['numtyp1sloc'],
+                              self.stats['numtyp2'],
+                              self.stats['numtyp2sloc'],
+                              self.stats['numtyp3'],
+                              self.stats['numtyp3sloc']
                           ),
                           width=300,
                           height=700,
@@ -143,6 +157,15 @@ class Handler(Thread):
                         self.stats['numclones'] += 1
                         _co = CloneObject()
                         _co.load(_cos)
+                        if _co.get_type() == 1:
+                            self.stats['numtyp1'] += 1
+                            self.stats['numtyp1sloc'] += _co.get_sloc()
+                        if _co.get_type() == 2:
+                            self.stats['numtyp2'] += 1
+                            self.stats['numtyp2sloc'] += _co.get_sloc()
+                        if _co.get_type() == 3:
+                            self.stats['numtyp3'] += 1
+                            self.stats['numtyp3sloc'] += _co.get_sloc()
                         totalclonelines += _co.get_sloc()
                         if _co.get_sloc() > self.stats['biggestc']:
                             self.stats['biggestc'] = _co.get_sloc()
