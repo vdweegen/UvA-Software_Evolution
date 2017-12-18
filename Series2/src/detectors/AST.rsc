@@ -27,17 +27,23 @@ anno int node @ bucket;
 anno loc node @ src;
 anno str node @ id;
 
+public map[str, int] seen = ("notNull":0);
+public real similarityThreshold = 0.95;
+public real similarityUniqueThreshold = 0.7;
+
 /*
 	Annotate AST
 */
 
 public set[node] loadAst(loc file) = {createAstFromFile(file, false)};
 
+
 public list[node] preprocess(set[node] asts, int minimumMass) =  ([] | it + subTrees(ast, minimumMass) |  ast <- asts);
-public set[list[int]]  potentialType3 = {};
+
 
 public map[list[int], list[node]] extractClones(list[node] candidates) = extractClones(candidates, false);
-// clones indexed by hash
+
+// Group type 1 and type 2 and compare type 3
 public map[list[int], list[node]] extractClones(list[node] candidates, bool withType3) {
 	list[list[int]] hashEntries = [ h@hash | h <- candidates];
 	
@@ -49,19 +55,26 @@ public map[list[int], list[node]] extractClones(list[node] candidates, bool with
 	map[tuple[list[int], list[int]], list[node]] cacheSima = (); 
 	
 	if (withType3) {
+			count = size(candidates);
+			inicount = size(candidates);
+			pool = candidates;
 			for(sc <- candidates ) {
+			  pool -= sc;
 			  scmass = sc@mass;
 			  schash = sc@hash;
-			    
-			  compareWith = [z|z <- candidates, <z@hash, schash> notin cacheSima, (z@mass - scmass) < 10 && (z@mass - scmass) > -10, z@hash != schash];
+			  count -= 1;
+			  compareWith = [z|z <- pool, <z@hash, schash> notin cacheSima, (z@mass - scmass) < 10 && (z@mass - scmass) > -10, similarityUnique(z@hash, schash) > similarityUniqueThreshold];
 			  
-			
-			  
-			  
+			  if (count % 100 == 0) {
+			   println("Current: <count> of <inicount>  Before compare: <size(pool)>");
+			  }
+			 
+
 			  for(tc <-compareWith ) {
 				  if (!(tc@hash > schash) && !(tc@hash < schash)) {
+				
 				   sim = similarity(tc@hash, schash);
-				   if (0.95 < sim) {
+				   if (similarityThreshold < sim) {
 				    
 				   	 cacheSima[<schash, tc@hash>] = [sc, tc];
 				  	 cacheSima[<tc@hash, schash>] = [];
@@ -80,8 +93,11 @@ public map[list[int], list[node]] extractClones(list[node] candidates, bool with
 		
 		}
 	}
-
-	potentialType3 = domain(domain(rangeX(cacheSima, {[]})));
+	
+	
+	// Only extract hashes with nodes
+	set[list[int]]  potentialType3 = domain(domain(rangeX(cacheSima, {[]})));
+	
 	rel[list[int], list[int]] potentialType3Map = domain(rangeX(cacheSima, {[]}));
 	
     map[list[int] hash, list[node] nodes] res = ();
@@ -328,7 +344,7 @@ public bool isSubTree(node n, set[node] p) {
 	return /n := p;
 }
 
-
+@memo
 public list[node] subTrees(node d, int threshold) {
 	list[node] subtrees = [];	
 
@@ -358,11 +374,23 @@ public list[node] subTrees(node d, int threshold) {
 	return subtrees;
 }
 //Similarity = 2 x S / (2 x S + L + R)
-@memo
 real similarity(list[int] a, list[int] b)  {
 	sharedNodes = a & b;
 	differentNodesA = a-b;
 	differentNodesB = b-a;
+	real sizeShared = 2.0 * size(sharedNodes);
+	
+	return sizeShared/(size(differentNodesA) + size(differentNodesB) + sizeShared);
+}
+@memo
+public set[int] memoToSet(list[int] a) = toSet(a);
+
+real similarityUnique(list[int] a1, list[int] b1)  {
+	set[int] a2 = memoToSet(a1);
+	set[int] b2 = memoToSet(b1);
+	sharedNodes = a2 & b2;
+	differentNodesA = a2-b2;
+	differentNodesB = b2-a2;
 	real sizeShared = 2.0 * size(sharedNodes);
 	
 	return sizeShared/(size(differentNodesA) + size(differentNodesB) + sizeShared);
@@ -384,8 +412,6 @@ public int hash (node d) {
 }
 
 
-public int nodeToCode(node n) = (0 | it + x | x <- chars(getName(n)));
-public map[str, int] seen = ("notNull":0);
 @memo
 public list[int] hashFast (node d) {
 	list[int] i = [];
@@ -413,8 +439,8 @@ public list[int] hashFast (node d) {
 	
 	
 }
+
 public list[int] hashFast (node d, map[str, int] seen) {
-	int p = 107;
 	list[int] i = [];
 	
 	
@@ -442,7 +468,7 @@ public list[int] hashFast (node d, map[str, int] seen) {
 }
 
 
-
+@memo
 public tuple[int, map[str, int]] varIndex(str name, map[str, int] seen) {
 		if (name notin seen) {
 			 seen[name] = size((seen));
@@ -569,6 +595,7 @@ public int typedCount(node d) {
 	
 	return count;
 }
+@memo
 public int fastCount(node d) {
 	list[int] i = [];
 	i += for(/node n := d, \TypeSymbol m !:= n, \Bound b !:= n ) 
@@ -587,6 +614,3 @@ public list[loc] a (node d) {
 	locations += for(/\Expression n := d, n.src? && n.src.length > 80) append(n.src);
 	return locations;
 }
-
-
-
